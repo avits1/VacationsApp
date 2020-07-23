@@ -6,14 +6,13 @@ import React from 'react';
 // including: react-scripts, react-dev-utils, ..
 // WorkAround: show date by text cut using .. 
 
-
 const IMG = (imageName) => {
     return require(`../../upload/${imageName}`);
 }
 
 class VacationCube extends React.Component {
         
-    followVacation(vac_id, is_followed) { // for vacations_user        
+    followVacation(vac_id, is_followed) { // for vacations_user                
         if (is_followed) {
             this.props.removeFollowed(vac_id);
         }
@@ -26,7 +25,7 @@ class VacationCube extends React.Component {
         this.props.editVacation(vac_id);                
     }
     
-    delVacation(vac_id) { // for admin vacation                        
+    delVacation(vac_id) { // for admin vacation         
         this.props.deleteVacation(vac_id);
     }
     
@@ -43,7 +42,7 @@ class VacationCube extends React.Component {
         MonEnd = parseInt(MonEnd) + 1;        
         let DateEndStr = DateEnd.getDate() + "/" + MonEnd + "/" + DateEnd.getFullYear();
         
-        var follow_num = (this.props.vcube.follow_num == null) ? 0 : this.props.vcube.follow_num;
+        var follow_num = (!this.props.vcube.follow_num) ? 0 : this.props.vcube.follow_num;
 
         //// For future use : ..
         // var src_path = picSource + this.props.vcube.pic;
@@ -64,12 +63,12 @@ class VacationCube extends React.Component {
 
             {/* fa- fas- fab- facebook-f tag bookmark star thumb-up  fa-xs fa-sm fa-lg fa-7x */}                        
             <div className={(this.props.is_admin) ? "d-none text-right" : "text-right"}>
-                <div className=""><i onClick={this.followVacation.bind(this, this.props.vcube.vac_id, this.props.is_followed)} className={(this.props.is_followed) ? "fas fa-star" : "far fa-star"}></i></div> 
+                <div className=""><i onClick={(e) => this.followVacation(this.props.vcube.vac_id, this.props.is_followed)} className={(this.props.is_followed) ? "fas fa-star" : "far fa-star"}></i></div> 
             </div>
 
             <div className={(!this.props.is_admin) ? "d-none text-right" : "text-right"}>
-                <div className=""><i onClick={this.delVacation.bind(this,this.props.vcube.vac_id)} className="far fa-times-circle"></i></div> 
-                <div className=""><i onClick={this.editVacation.bind(this,this.props.vcube.vac_id)} className="fas fa-pen"></i></div> 
+                <div className=""><i onClick={(e) => this.delVacation(this.props.vcube.vac_id)} className="far fa-times-circle"></i></div> 
+                <div className=""><i onClick={(e) => this.editVacation(this.props.vcube.vac_id)} className="fas fa-pen"></i></div> 
             </div>
 
             {/* badge badge-light */}
@@ -82,8 +81,7 @@ class VacationCube extends React.Component {
                     <img  className='border border-primary rounded ' width='100%' height='100%'  src={IMG(this.props.vcube.pic)} alt="Vacation Pic" />
                 </div>
             </div>
-            
-            
+                        
             {/* TODO1: use Moment Here */}
             {/* <div className="text-center">{new Intl.DateTimeFormat('en-US',options).format(props.vcube.date_start)}   */}
             {/* <div className="text-center"> <Moment parse="YYYY-MM-DD HH:mm">{props.vcube.date_start}</Moment>   */}
@@ -96,13 +94,13 @@ class VacationCube extends React.Component {
             {/* {props.vcube.date_start.parse("01 Jan 1970") } */} 
 
             <div className="row">               
-                <div className="col-md-10 col-lg-10 col-xl-10 col-sm-10 col-xs-10">                        
+                <div className="col-10">                        
                     <div className="text-left  text-success">Vacation Dates:</div>
                     <div  className="text-left text-info">{DateStartStr} - {DateEndStr}</div>            
                 </div>
 
                 {/* badge badge-pill badge-dark badge-info badge-primary badge-secondary  */}
-                <div className="col-md-2 col-lg-2 col-xl-2 col-sm-2 col-xs-2">
+                <div className="col-2">
                     <div className={(this.props.is_admin) ? "d-none text-right" : "text-right badge badge-dark"}>{follow_num}</div>
                 </div>
             </div>

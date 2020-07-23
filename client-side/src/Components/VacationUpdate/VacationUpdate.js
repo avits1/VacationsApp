@@ -11,7 +11,7 @@ class VacationUpdate extends React.Component {
     constructor(props) {
         super(props);
         
-        if (this.props && this.props.match && this.props.match.params) {
+        if (this.props?.match?.params) {
             this.state.inner_vacation.vac_id = this.props.match.params.vac_id;
             this.state.inner_vacation.vac_desc = this.props.match.params.vac_desc;
             this.state.inner_vacation.dest = this.props.match.params.dest;
@@ -49,83 +49,63 @@ class VacationUpdate extends React.Component {
         in_update: false
     }
 
-    validate_update() {                
-        if (this.state.inner_vacation.vac_desc === "" || this.state.inner_vacation.vac_desc === undefined) {
-            this.setState({
-                show_message: true,
-                message_ok: false,
-                msg_text: "Vacation Description IS EMPTY !"
-            })            
+    updateStateMsg(newMsg) {
+        this.setState({
+            show_message: true,
+            message_ok: false,
+            msg_text: newMsg
+        })    
+    }
+
+    validateUpdate() {                
+        if (!this.state.inner_vacation.vac_desc || this.state.inner_vacation.vac_desc === undefined) {
+            this.updateStateMsg("Vacation Description IS EMPTY !");
             return(false);
         }
         
-        if (this.state.inner_vacation.dest === "" || this.state.inner_vacation.dest === undefined) {
-           this.setState({
-                show_message: true,
-                message_ok: false,
-                msg_text: "Vacation Destination IS EMPTY !"
-            })            
+        if (!this.state.inner_vacation.dest || this.state.inner_vacation.dest === undefined) {
+            this.updateStateMsg("Vacation Destination IS EMPTY !");
             return(false);
         }
 
-        if (this.state.inner_vacation.pic === "" || this.state.inner_vacation.pic === undefined) {
-            this.setState({
-                 show_message: true,
-                 message_ok: false,
-                 msg_text: "Picture Path / Filename IS EMPTY !"
-             })            
+        if (!this.state.inner_vacation.pic || this.state.inner_vacation.pic === undefined) {
+            this.updateStateMsg("Picture Path / Filename IS EMPTY !");
              return(false);
          }
                 
-        if (this.state.inner_vacation.date_start === "" || this.state.inner_vacation.date_start === 0
+        if (!this.state.inner_vacation.date_start || this.state.inner_vacation.date_start === 0
                 || this.state.inner_vacation.date_start === undefined || this.state.inner_vacation.date_start === NaN) {
-            this.setState({
-                show_message: true,
-                message_ok: false,
-                msg_text: "Date of Start IS EMPTY !"
-            })     
+            this.updateStateMsg("Date of Start IS EMPTY !");
             return(false);
         }
         
-        if (this.state.inner_vacation.date_end === "" || this.state.inner_vacation.date_end === 0
-            || this.state.inner_vacation.date_end === undefined || this.state.inner_vacation.date_end === NaN) {
-            this.setState({
-                show_message: true,
-                message_ok: false,
-                msg_text: "Date of End IS EMPTY !"
-            })     
+        if (!this.state.inner_vacation.date_end || this.state.inner_vacation.date_end === 0
+                || this.state.inner_vacation.date_end === undefined || this.state.inner_vacation.date_end === NaN) {
+            this.updateStateMsg("Date of End IS EMPTY !");
             return(false);
         }
         
         let curr_date =  new Date();
         if (this.state.inner_vacation.date_start < curr_date 
             || this.state.inner_vacation.date_start >= this.state.inner_vacation.date_end) {
-            this.setState({
-                show_message: true,
-                message_ok: false,
-                msg_text: "Dates Are Wrong !"
-            })     
+            this.updateStateMsg("Dates Are Wrong !");                
             return(false);
         }        
 
-        if (this.state.inner_vacation.price === "" || this.state.inner_vacation.price === undefined || this.state.inner_vacation.price === 0.0 
-            || this.state.inner_vacation.price === 0  || this.state.inner_vacation.price < 0) {        
-            this.setState({
-                show_message: true,
-                message_ok: false,
-                msg_text: "Price Must Be POSITIVE !"
-            })     
+        if (!this.state.inner_vacation.price || this.state.inner_vacation.price === undefined
+            || this.state.inner_vacation.price === 0.0 || this.state.inner_vacation.price <= 0) {        
+            this.updateStateMsg("Price Must Be POSITIVE !");                
             return(false);
         }
                
         return(true);
     }
 
-    add_vacation() {
+    addVacation() {
         // in_update == false;
-        let ret = this.validate_update();
+        let ret = this.validateUpdate();
         if (!ret) {
-            console.log("add_vacation() - Validate Update failed !");            
+            console.log("addVacation() - Validate Update failed !");            
             return;
         }
                 
@@ -159,7 +139,7 @@ class VacationUpdate extends React.Component {
 
     update_vacation() {
         this.setState({}); // save both date picker (!)
-        let ret = this.validate_update();
+        let ret = this.validateUpdate();
         if (!ret) {
             console.log("update_vacation() - Validate Update failed !");            
             return;
@@ -227,24 +207,42 @@ class VacationUpdate extends React.Component {
         }) );        
     }
 
-    
+    setDateStart(dateStart) {
+        if (!dateStart) {
+            this.state.inner_vacation["date_start"] = null;
+            return;
+        }
+        dateStart.setHours(dateStart.getHours() + 3);
+        this.state.inner_vacation["date_start"] = dateStart;
+        this.setState({});
+    }
+
+    setDateEnd(dateEnd) {
+        if (!dateEnd) {
+            this.state.inner_vacation["date_end"] = null;
+            return;
+        }
+        dateEnd.setHours(dateEnd.getHours() + 3);
+        this.state.inner_vacation["date_end"] = dateEnd;
+        this.setState({});
+    }
+
     render() {
 
         return (
             <div className="row">
-                <div className="col-md-12 col-lg-12 col-xl-12 col-sm-12 col-xs-12
-                                border border-success p-1">              
+                <div className="col-12 border border-success p-1">              
                     <div className="form">
                         <h3>Add/Update Vacation</h3>
                         
                         <div className="form-row">
                             <div className="form-group col-md-6">
                                 <label htmlFor="dest" className="col-form-label col-form-label-md">Destination</label>
-                                <input type="text"  id="dest" name="dest" onChange={this.handleChange.bind(this)}  className="form-control" placeholder="Destination.." value={this.state.inner_vacation.dest} />
+                                <input type="text"  id="dest" name="dest" onChange={(e) => this.handleChange(e)}  className="form-control" placeholder="Destination.." value={this.state.inner_vacation.dest} />
                             </div>
                             <div className="form-group col-md-6">
                                 <label htmlFor="vac_desc" className="col-form-label col-form-label-md">Description</label>
-                                <input type="text" id="vac_desc" name="vac_desc" onChange={this.handleChange.bind(this)}  className="form-control" placeholder="Description.." value={this.state.inner_vacation.vac_desc} /> 
+                                <input type="text" id="vac_desc" name="vac_desc" onChange={(e) => this.handleChange(e)}  className="form-control" placeholder="Description.." value={this.state.inner_vacation.vac_desc} /> 
                             </div>        
                         </div>  
 
@@ -252,21 +250,21 @@ class VacationUpdate extends React.Component {
 
                             <div className="form-group col-md-6">
                                 <label htmlFor="pic" className="col-form-label col-form-label-md">Picture Link</label>
-                                <input type="file" id="pic" onChange={this.picSelect.bind(this)} name="pic" className="form-control" placeholder="Picture Link.."  />                                 
+                                <input type="file" id="pic" onChange={(e) => this.picSelect(e)} name="pic" className="form-control" placeholder="Picture Link.."  />                                 
                             </div>
                             
                             <div className="form-group col-md-3">
                                 <label htmlFor="date-start" className="col-form-label col-form-label-md">Date Start</label>
                                 <DatePicker locale="en-US" name="date_start" dateFormat="dd/MM/yyyy"                                                                                 
                                    selected={this.state.inner_vacation.date_start}                                          
-                                   onChange={date1 => {date1.setHours(date1.getHours() + 3); this.state.inner_vacation["date_start"] = date1;  this.setState({});} } />
+                                   onChange={date1 => this.setDateStart(date1)} />
                             </div>
                             
                             <div className="form-group col-md-3">
                                 <label htmlFor="date-end" className="col-form-label col-form-label-md">Date End</label>
                                 <DatePicker locale="en-US" name="date_end" dateFormat="dd/MM/yyyy"                                                                             
                                     selected={this.state.inner_vacation.date_end}                                          
-                                    onChange={date2 => { date2.setHours(date2.getHours() + 3);  this.state.inner_vacation["date_end"] = date2; this.setState({});} } />                                     
+                                    onChange={date2 => { this.setDateEnd(date2)}} />                                     
                             </div> 
 
                         </div>
@@ -274,7 +272,7 @@ class VacationUpdate extends React.Component {
                         <div className="form-row">
                             <div className="form-group col-md-6">
                                 <label htmlFor="price" className="col-form-label col-form-label-md">Price</label>
-                                <input type="number" id="price" onChange={this.handleChange.bind(this)} name="price" className="form-control" placeholder="Price .." value={this.state.inner_vacation.price} />
+                                <input type="number" id="price" onChange={(e) => this.handleChange(e)} name="price" className="form-control" placeholder="Price .." value={this.state.inner_vacation.price} />
                             </div>
                             <div className="form-group col-md-6">
                                 <label htmlFor="follow_num" className="col-form-label col-form-label-md">Follow Number</label>
@@ -284,10 +282,10 @@ class VacationUpdate extends React.Component {
                                                 
                         <VacsMsgs success={this.state.message_ok} show_msg={this.state.show_message} message={this.state.msg_text} />                                                                                        
                         <div className={(this.state.in_update) ? "d-none btn btn-primary mb-2 mr-2" : "btn btn-primary mb-2 mr-2"} 
-                                onClick={this.add_vacation.bind(this)}>Add Vacation</div>
+                                onClick={ (e) => this.addVacation(e)}>Add Vacation</div>
                         <div className={(this.state.in_update) ? "btn btn-success mb-2 mr-2" : "d-none btn btn-success mb-2 mr-2"} 
-                                onClick={this.update_vacation.bind(this)}>Edit Vacation</div>
-                        <div className="btn btn-danger mb-2" onClick={this.clear_form.bind(this)}>Clear Form</div>                                            
+                                onClick={ (e) => this.update_vacation(e)}>Edit Vacation</div>
+                        <div className="btn btn-danger mb-2" onClick={ (e) => this.clear_form(e)}>Clear Form</div>                                            
                     </div>
                     <Link to="/vacations_admin" >Back To Manage Vacations</Link>
                 </div>                  

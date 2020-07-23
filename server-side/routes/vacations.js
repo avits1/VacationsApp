@@ -6,8 +6,7 @@ var authen = require('../modules/authen'); /// authenticate modul - check login 
 
 
 // GET vacations.
-router.get('/', function (req, res, next) {       
-    // console.log("NodeJS Server - router.get() - Vacations List");
+router.get('/', function (req, res, next) {           
     client_response.clear();   
    
     if (!authen.is_logined_reply(req,res,"Vacations List")) { // not logined !          
@@ -58,7 +57,7 @@ router.get('/:user_id', function (req, res, next) {
 
   var user_id = (req.params.user_id) ? req.params.user_id : 0;    
   var err_fields = [];   
-  if (user_id == "") {
+  if (user_id == 0) {  
     err_fields.push("User Id is Zero");
   }
   if (err_fields.length > 0) {
@@ -97,20 +96,20 @@ router.post('/', (req, res, next) => {
   }
   
   client_response.clear();
-  var err_fields = [];
-  if (vac_desc == "") {
+  var err_fields = [];  
+  if (!vac_desc) {
     err_fields.push("Vacation Description is Empty");
-  }
-  if (dest == "") {
+  }  
+  if (!dest) {    
     err_fields.push("Destination is Empty");
-  }
-  if (pic == "") {
+  }  
+  if (!pic) {    
     err_fields.push("Vacation Picture (FileName) is Empty");
   }
-  if (date_start == "" || date_start == 0  || date_start == NaN) {
+  if (!date_start || date_start == 0  || date_start == NaN) {    
     err_fields.push("Vacation Date Start is Empty");
   }
-  if (date_end == "" || date_end == 0 || date_end == NaN) {
+  if (!date_end || date_end == 0 || date_end == NaN) {    
     err_fields.push("Vacation Date End is Empty");
   }
   
@@ -122,11 +121,11 @@ router.post('/', (req, res, next) => {
 
   if (d_start < currDate) { /// Block OLD Dates !
     err_fields.push("Vecation Date Start is Wrong !");
-  }
+  }  
 
   if (d_start >= d_end) {
     err_fields.push("Dates are mis-placed !");
-  }
+  }  
 
   if (price <= 0) {
       err_fields.push("Vacation Price must be Positive !");
@@ -137,25 +136,26 @@ router.post('/', (req, res, next) => {
       client_response.setResponse(false, false, "something is missing...", err_fields);      
       res.status(400).json(client_response.getData());      
       return;
-  } else {
-      // Enter New Vacation ...                
-        con.query(`INSERT INTO vacations (vac_desc,dest,pic,date_start,date_end,price,follow_num) VALUES (?,?,?,?,?,?,?)`, [vac_desc, dest, pic, d_start, d_end, price, follow_num], function (err, result, fields) {          
-          if (err) {
-              console.log(err);
-              client_response.setResponse(false, true, "There Was an Error Adding New Vacation To DB...", err);
-              res.status(500).json(client_response.getData());
-              return;
-          }        
-          if (result.affectedRows > 0) {
-            client_response.setResponse(true, false, "New Vacation Was Added Succesfully", []);
-            res.status(201).json(client_response.getData());
-            return;
-          }
-          client_response.setResponse(false, false, "Can't Add New Vacation - Check Data !", []);
-          res.status(409).json(client_response.getData()); // Status Code : 409 - Conflict
-          return;
-      });
   }
+
+  // Enter New Vacation ...                
+  con.query(`INSERT INTO vacations (vac_desc,dest,pic,date_start,date_end,price,follow_num) VALUES (?,?,?,?,?,?,?)`, [vac_desc, dest, pic, d_start, d_end, price, follow_num], function (err, result, fields) {          
+    if (err) {
+        console.log(err);
+        client_response.setResponse(false, true, "There Was an Error Adding New Vacation To DB...", err);
+        res.status(500).json(client_response.getData());
+        return;
+    }        
+    if (result.affectedRows > 0) {
+      client_response.setResponse(true, false, "New Vacation Was Added Succesfully", []);
+      res.status(201).json(client_response.getData());
+      return;
+    }
+    client_response.setResponse(false, false, "Can't Add New Vacation - Check Data !", []);
+    res.status(409).json(client_response.getData()); // Status Code : 409 - Conflict
+    return;
+  });
+
 });
 
 
@@ -218,20 +218,20 @@ router.put('/', (req, res, next) => {
   var err_fields = [];
   if (vac_id == 0) {
       err_fields.push("Vacation ID NOT Selected");
-  }
-  if (vac_desc == "") {
+  }  
+  if (!vac_desc) {    
     err_fields.push("Vacation Description is Empty");
-  }
-  if (dest == "") {
+  }  
+  if (!dest) {    
     err_fields.push("Destination is Empty");
   }
-  if (pic == "") {
+  if (!pic) {    
     err_fields.push("Vacation Picture (FileName) is Empty");
-  }
-  if (date_start == "" || date_start == 0  || date_start == NaN) {
+  }  
+  if (!date_start || date_start == 0  || date_start == NaN) {    
     err_fields.push("Vacation Date Start is Empty");
-  }
-  if (date_end == "" || date_end == 0 || date_end == NaN) {
+  }  
+  if (!date_end || date_end == 0 || date_end == NaN) {    
     err_fields.push("Vacation Date End is Empty");
   }
     
@@ -246,7 +246,7 @@ router.put('/', (req, res, next) => {
 
   if (d_start >= d_end) {
     err_fields.push("Dates are mis-placed !");
-  }
+  }  
 
   if (price <= 0) {
       err_fields.push("Vacation Price must be Positive !");
@@ -257,26 +257,25 @@ router.put('/', (req, res, next) => {
       client_response.setResponse(false, false, " something is missing...", err_fields);
       res.status(400).json(client_response.getData()); // Status Code : 400 - BAD REQUEST
       return;
-  } else {
-      // Update Vacation ...       
-      con.query(`UPDATE vacations SET vac_desc=?,dest=?,pic=?,date_start=?,date_end=?,price=?,follow_num=? WHERE vac_id=?`, [vac_desc, dest, pic, d_start, d_end, price, follow_num, vac_id], function (err, result, fields) {
-          if (err) {
-              console.log(err);
-              client_response.setResponse(false, true, "There Was an Error Updating Vacation To DB...", err);
-              res.status(500).json(client_response.getData());
-              return;
-          }
-          if (result.affectedRows > 0) {
-            client_response.setResponse(true, false, "Vacation was Updated Succesfully", []);
-            res.status(200).json(client_response.getData());
-            return;
-          }
-          client_response.setResponse(false, false, "NO Vacation To Update !", []);
-          res.status(500).json(client_response.getData());
-          return;
-      });
   }
 
+  // Update Vacation ...       
+  con.query(`UPDATE vacations SET vac_desc=?,dest=?,pic=?,date_start=?,date_end=?,price=?,follow_num=? WHERE vac_id=?`, [vac_desc, dest, pic, d_start, d_end, price, follow_num, vac_id], function (err, result, fields) {
+      if (err) {
+          console.log(err);
+          client_response.setResponse(false, true, "There Was an Error Updating Vacation To DB...", err);
+          res.status(500).json(client_response.getData());
+          return;
+      }
+      if (result.affectedRows > 0) {
+        client_response.setResponse(true, false, "Vacation was Updated Succesfully", []);
+        res.status(200).json(client_response.getData());
+        return;
+      }
+      client_response.setResponse(false, false, "NO Vacation To Update !", []);
+      res.status(500).json(client_response.getData());
+      return;
+  });
 });
 
 module.exports = router;

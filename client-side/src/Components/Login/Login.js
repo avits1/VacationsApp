@@ -16,7 +16,7 @@ class Login extends React.Component {
     }
 
     login() {
-        let ret = this.validate_login();
+        let ret = this.validateLogin();
         if (!ret) {           
             return;
         }
@@ -30,8 +30,8 @@ class Login extends React.Component {
         })
             .then(res => res.json())
             .then((res) => {                
-                if (res.success) { 
-                    if (res.data && res.data.username) {                        
+                if (res.success) {                     
+                    if (res?.data?.username) {                        
                         sessionStorage.first_name = JSON.stringify(res.data.first_name);
                     }
                     if (res.data.role > 0 && res.data.role < STANDARD_ROLE) {                        
@@ -50,22 +50,22 @@ class Login extends React.Component {
             } );
     }
     
-    validate_login() {                  
-        if (this.state.username === "" || this.state.username.length < 3) {
-            this.setState({
-                show_message: true,
-                message_ok: false,
-                msg_text: "Username IS EMPTY OR TOO SHORT !"
-            })     
+    updateStateMsg(newMsg) {
+        this.setState({
+            show_message: true,
+            message_ok: false,
+            msg_text: newMsg
+        })    
+    }
+
+    validateLogin() {                          
+        if (this.state.username.length < 3) {
+            this.updateStateMsg("Username IS EMPTY OR TOO SHORT !");
             return(false);
         }
-
-        if (this.state.password === "" || this.state.password.length < 4) {
-            this.setState({
-                show_message: true,
-                message_ok: false,
-                msg_text: "Password IS EMPTY OR TOO SHORT !"
-            })     
+        
+        if (this.state.password.length < 4) {
+            this.updateStateMsg("Password IS EMPTY OR TOO SHORT !");              
             return(false);
         }               
         return(true);
@@ -77,19 +77,18 @@ class Login extends React.Component {
 
     render() {
         return (
-            <div className="row border border-primary">
-                <div className="col-md-9 col-lg-9 col-xl-9 col-sm-9 col-xs-9 
-                                border border-dark border-left-0 border-bottom-0 border-top-0 p-1">                
+            <div className="row border border-primary">                
+                <div className="col-9 border border-dark border-left-0 border-bottom-0 border-top-0 p-1">                
                     <div className="form">
                     
                     <div className="form-row">
                         <div className="form-group col-md-6">
-                            <label htmlFor="username" className="col-form-label col-form-label-md">Username</label>
-                            <input type="text" onChange={this.handleChange.bind(this)} name="username" className="form-control" placeholder="username .." value={this.state.username} />
+                            <label htmlFor="username" className="col-form-label col-form-label-md">Username</label>                            
+                            <input type="text" onChange={(e) => this.handleChange(e)} name="username" className="form-control" placeholder="username .." value={this.state.username} />
                         </div>
                         <div className="form-group col-md-6">
-                            <label htmlFor="password" className="col-form-label col-form-label-md">Password</label>
-                            <input type="password" onChange={this.handleChange.bind(this)} name="password" className="form-control" placeholder="password .. " value={this.state.password} />                            
+                            <label htmlFor="password" className="col-form-label col-form-label-md">Password</label>                            
+                            <input type="password" onChange={(e) => this.handleChange(e)} name="password" className="form-control" placeholder="password .. " value={this.state.password} />                            
                         </div>
                     </div>    
                         
@@ -98,8 +97,8 @@ class Login extends React.Component {
                     </div>
                     <Link to="/register">New User? Please Register</Link>
                 </div>
-
-                <div className="col-md-3 col-lg-3 col-xl-3 col-sm-3 col-xs-3">                  
+                
+                <div className="col-3">
                     <VacsBanner show_banner={true}/> 
                 </div>    
             </div>           

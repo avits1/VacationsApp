@@ -14,13 +14,17 @@ const socketIo = require('socket.io');
 
 // var cors = require('cors'); // for CORS (!)
 
-// TODO1: apply Socket.IO for Node server\
+// TODO1: apply Socket.IO for Node server
 
 // const port = process.env.PORT || 4001; /// TODO
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var vacationsRouter = require('./routes/vacations');
 var vacsFollowRouter = require('./routes/vacs_follow');
+
+// TODO:
+// 1. Update NodeJS (to after 14.2.0)
+// 2. Use Optional Chaining => [ if (arg1?.arg2?.foo .. ) ]
 
 var app = express();
 // app.use(cors()); // use CORS when necessary(!)

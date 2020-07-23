@@ -21,7 +21,7 @@ class VacsAdmin extends React.Component {
             })        
             .then((res) => {                
                 if (res.success) {
-                    this.setState({ vacations: res.data });
+                    this.setState({ vacations: res.data });                    
                 } else if (respStatus === 401 || respStatus === 403) { /// not admin ! (or not logined)
                     this.props.history.push('/login'); // back to login
                 } else { // some error occured ..
@@ -81,13 +81,13 @@ class VacsAdmin extends React.Component {
             <div className="border border-primary p-4">
                 <div className="row">
 
-                    <div className="col-md-3 col-lg-3 col-xl-3 col-sm-3 col-xs-3">
+                    <div className="col-3">
                         <Link className="btn btn-primary mb-2" to="/vacation_add">Add Vacation</Link>
                     </div>
-                    <div className="col-md-7 col-lg-7 col-xl-7 col-sm-7 col-xs-7">                            
+                    <div className="col-7">                            
                         <h3>Manage Vacations</h3>                        
                     </div>
-                    <div className="col-md-2 col-lg-2 col-xl-2 col-sm-2 col-xs-2">                            
+                    <div className="col-2">                            
                         <Link to="/logout" className="btn btn-danger mb-2" >Logout</Link>                        
                     </div>                    
                 </div>                
@@ -95,7 +95,7 @@ class VacsAdmin extends React.Component {
                <VacsMsgs success={this.state.message_ok} show_msg={this.state.show_message} message={this.state.msg_text} />               
                
                 <div className="row">                    
-                    <div className="col-md-12 col-lg-12 col-xl-12 col-sm-12 col-xs-12">
+                    <div className="col-12">
                                                                                                                                                                                                              
                         <div id="vacations_cubes">                                                        
                             <div className='row inner_vacs ml-1'>
@@ -105,9 +105,9 @@ class VacsAdmin extends React.Component {
                                     this.state.vacations.map(
                                         (vacation, vindex) => {
                                             return (
-                                                <div key={vindex} className="col-md-4 col-lg-4 col-xl-4 col-sm-4 col-xs-4 p1 mb1 border border-primary">
+                                                <div key={vindex} className="col-4 p1 mb1 border border-primary">
                                                     <VacationCube vcube={vacation} is_admin={true} user_id={this.state.user_id} is_followed={null} addFollowed={null} removeFollowed={null}
-                                                      deleteVacation={this.deleteVacation.bind(this)} editVacation={this.editVacation.bind(this, vacation)} />                                                       
+                                                      deleteVacation={(e) => this.deleteVacation(vacation.vac_id)} editVacation={(e) => this.editVacation(vacation)} />                                                       
                                                 </div>
                                             )
                                         }

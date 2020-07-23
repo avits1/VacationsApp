@@ -1,11 +1,9 @@
 
 import React from 'react';
 import VacsMsgs from '../VacsMsgs/VacsMsgs';
-// import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { BrowserRouter as Link } from "react-router-dom";
 
 class Logout extends React.Component {
-
 
    state = {
         show_message: false,
@@ -16,7 +14,7 @@ class Logout extends React.Component {
     
    componentDidMount() {
     this.setState({show_message: true, message_ok: true, msg_text: "Loggin Out .."});            
-    if (sessionStorage && sessionStorage.first_name) {
+    if (sessionStorage?.first_name) {
         this.state.first_name = JSON.parse(sessionStorage.first_name);
     }    
     this.logout();
@@ -51,7 +49,7 @@ class Logout extends React.Component {
             <div className="border border-info p-4">
                 <h1> Logout </h1>
                 <VacsMsgs success={this.state.message_ok} show_msg={this.state.show_message} message={this.state.msg_text} />
-                <div className="btn btn-danger mr-2" onClick={this.logout.bind(this)}>Logout</div>
+                <div className="btn btn-danger mr-2" onClick={(e) => this.logout(e)}>Logout</div>
                 <Link to="/login" className="btn btn-primary" >Want To Login Again? Press Here</Link>                
             </div>
         )

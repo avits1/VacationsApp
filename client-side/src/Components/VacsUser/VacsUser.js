@@ -129,7 +129,7 @@ class VacsUser extends React.Component {
             } );
     }
  
- removeFollowed(vac_id) {        
+ removeFollowed(vac_id) {            
     fetch('/vacs_follow/', {
         method: "DELETE",
         body: JSON.stringify({vac_id: vac_id}),
@@ -161,20 +161,20 @@ class VacsUser extends React.Component {
         return (
             <div className="border border-success p-4">
                 <div className="row"> 
-                    <div className="col-md-2 col-lg-2 col-xl-2 col-sm-2 col-xs-2">
+                    <div className="col-2">
                         {/* badge-info badge-primary badge-secondary */}
                         {(sessionStorage.first_name) ? <h3> <span className="badge badge-secondary">Hello {JSON.parse( sessionStorage.first_name)}</span> </h3> : null}                        
                     </div>
-                    <div className="col-md-8 col-lg-8 col-xl-8 col-sm-8 col-xs-8">                        
+                    <div className="col-8">                        
                     </div>
-                    <div className="col-md-2 col-lg-2 col-xl-2 col-sm-2 col-xs-2">
+                    <div className="col-2">
                         <Link to="/logout" className="btn btn-danger mb-2" >Logout</Link>
                     </div>
                 </div>
                                
                <VacsMsgs success={this.state.message_ok} show_msg={this.state.show_message} message={this.state.msg_text} />                              
                 <div className="row">                
-                    <div className="col-md-12 col-lg-12 col-xl-12 col-sm-12 col-xs-12">
+                    <div className="col-12">
                                                                                                                                                                           
                         <div id="vacations_cubes">
                             <div className='row inner_vacs'>
@@ -185,9 +185,9 @@ class VacsUser extends React.Component {
                                         (vacation, vindex) => {
                                             let followed = this.isFollowed(vacation.vac_id);                                            
                                             return (                                                
-                                                <div key={vindex} className="col-md-4 col-lg-4 col-xl-4 col-sm-4 col-xs-4 p1 mb1 border border-primary">                                                                                                      
+                                                <div key={vindex} className="col-4 p1 mb1 border border-primary">                                                                                                      
                                                     <VacationCube vcube={vacation} is_admin={false} is_followed={followed}
-                                                       deleteVacation={null} addFollowed={this.addFollowed.bind(this)} removeFollowed={this.removeFollowed.bind(this)} />
+                                                       deleteVacation={null} addFollowed={(e) => this.addFollowed(e, vacation.vac_id)} removeFollowed={(e) => this.removeFollowed(e, vacation.vac_id)} />
                                                 </div>
                                             )}
                                     )}

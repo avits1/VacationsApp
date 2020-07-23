@@ -1,6 +1,5 @@
 import React from 'react';
 import './App.css';
-// import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Login from './Components/Login/Login';
 import Logout from './Components/Logout/Logout';
@@ -9,14 +8,17 @@ import VacsUser from './Components/VacsUser/VacsUser';
 import VacsAdmin from './Components/VacsAdmin/VacsAdmin';
 import VacationUpdate from './Components/VacationUpdate/VacationUpdate';
 import VacsReport from './Components/VacsReport/VacsReport';
-// import VacsBanner from './Components/VacsBanner/VacsBanner';
 import VacsMsgs from './Components/VacsMsgs/VacsMsgs';
 
 /// TODO:
+// * Code Improve & Async/Await
+// ** vacation sort - check & fix
 // 1. Socket.IO
 // 2. Vacation Update AS Pop Up
 // 3. Dates AS Moment.JS
-// 4. Graph Component
+// 4.0 Graph Component
+// 4.1 Server Side: Update NodeJS (to after 14.2.0)
+// 4.2 Server Side: Use Optional Chaining => [ if (arg1?.arg2?.foo .. ) ]
 // 5. UX improvements
 // 6. Web Deploy
 
@@ -31,10 +33,10 @@ class App extends React.Component {
   render() {
       return (
           <div className="App container">
-            <div className="row">
-            <div className="col-md-2 col-lg-2 col-xl-2 col-sm-2 col-xs-2"> 
-              </div> 
-              <div className="col-md-8 col-lg-8 col-xl-8 col-sm-8 col-xs-9"> 
+            <div className="row">            
+            <div className="col-2">
+              </div>               
+              <div className="col-8 col-xs-9"> 
               <h3>
                 My Vacations Observer - Tag &amp; Follow
               </h3>   
@@ -44,8 +46,8 @@ class App extends React.Component {
             <div className="row ml-1">           
               <VacsMsgs show_msg={this.state.show_message} success={this.state.message_ok} message={this.state.msg_text}  />
             </div>
-            <div className="row">                  
-                  <div className="col-md-12 col-lg-12 col-xl-12 col-sm-12 col-xs-12">
+            <div className="row">                                    
+                  <div className="col-12">
                       <Router>
                           <div className="">
                               <Route exact path="/" component={Login} />
