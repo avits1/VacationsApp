@@ -3,7 +3,7 @@ var router = express.Router();
 var client_response = require('../modules/client_response');
 var con = require('../modules/connection').getConnection();
 var authen = require('../modules/authen'); /// authenticate modul - check login & admin
-
+var socket_io = require('../modules/socket_io' ); /// socket-io modul - init and send
 
 // GET vacations.
 router.get('/', function (req, res, next) {           
@@ -16,7 +16,7 @@ router.get('/', function (req, res, next) {
     con.query("SELECT * FROM vacations vacs ", function (err, vacations_list, fields) {    
       if (err) {
           console.log(err);
-          client_response.setResponse(false, true, "Vacations List - There Was an Error...", err);
+          client_response.setResponse(false, true, "Vacations List - There Was an Error...", err.sqlMessage);
           res.status(500).json(client_response.getData());
           return;
       }
@@ -37,7 +37,7 @@ router.get('/admin', function (req, res, next) {
   con.query("SELECT * FROM vacations v ", function (err, vacations, fields) {    
     if (err) {
         console.log(err);
-        client_response.setResponse(false, true, "Vacations List For Admin - There Was an Error...", err);
+        client_response.setResponse(false, true, "Vacations List For Admin - There Was an Error...", err.sqlMessage);
         res.status(500).json(client_response.getData());
         return;
     }
@@ -47,7 +47,7 @@ router.get('/admin', function (req, res, next) {
   });
 });
 
-
+// Get vacations for user by user_id
 router.get('/:user_id', function (req, res, next) {         
   client_response.clear(); 
 
@@ -70,7 +70,7 @@ router.get('/:user_id', function (req, res, next) {
   con.query("SELECT DISTINCT * FROM vacations v INNER JOIN vacs_follow vf ON v.vac_id = vf.vac_id WHERE vf.user_id = ?", [user_id],function (err, vacations_by_user, fields) {            
       if (err) {
           console.log(err);
-          client_response.setResponse(false, true, "Vacations List - There Was an Error...", err);
+          client_response.setResponse(false, true, "Vacations List - There Was an Error...", err.sqlMessage);
           res.status(500).json(client_response.getData());
           return;
       }
@@ -139,16 +139,19 @@ router.post('/', (req, res, next) => {
   }
 
   // Enter New Vacation ...                
-  con.query(`INSERT INTO vacations (vac_desc,dest,pic,date_start,date_end,price,follow_num) VALUES (?,?,?,?,?,?,?)`, [vac_desc, dest, pic, d_start, d_end, price, follow_num], function (err, result, fields) {          
-    if (err) {
+  con.query(`INSERT INTO vacations (vac_desc,dest,pic,date_start,date_end,price,follow_num) VALUES (?,?,?,?,?,?,?)`, [vac_desc, dest, pic, d_start, d_end, price, follow_num], function (err, result, fields) { 
+    if (err) {        
         console.log(err);
-        client_response.setResponse(false, true, "There Was an Error Adding New Vacation To DB...", err);
+        client_response.setResponse(false, true, "There Was an Error Adding New Vacation To DB...", err.sqlMessage);
         res.status(500).json(client_response.getData());
         return;
     }        
     if (result.affectedRows > 0) {
       client_response.setResponse(true, false, "New Vacation Was Added Succesfully", []);
       res.status(201).json(client_response.getData());
+      // Send msg to Client Via Socket.IO:
+      let vac_added = JSON.stringify({vac_id: result.insertId, vac_desc: vac_desc, dest: dest, pic: pic, date_start: date_start, date_end: date_end, price: price, follow_num: 0});
+      socket_io.socket_send(vac_added);
       return;
     }
     client_response.setResponse(false, false, "Can't Add New Vacation - Check Data !", []);
@@ -179,16 +182,17 @@ router.delete('/', function (req, res, next) {
       res.status(400).json(client_response.getData());
       return;
   } else {      
-         con.query(`DELETE FROM vacations Where vac_id = ? `, [vac_id], function (err, result, fields) {
+         con.query(`DELETE FROM vacations Where vac_id = ? `, [vac_id], function (err, result, fields) {        
           if (err) {
               console.log(err);
-              client_response.setResponse(false, true, "Delete Vacation - There Was an Error...", err);
+              client_response.setResponse(false, true, "Delete Vacation - There Was an Error...", err.sqlMessage);
               res.status(500).json(client_response.getData());
               return;
           }          
           if (result.affectedRows > 0) {
             client_response.setResponse(true, false, "One Vacation was Deleted...", []);
-            res.status(200).json(client_response.getData());
+            res.status(200).json(client_response.getData());            
+            socket_io.socket_del(vac_id); // Send msg to Client Via Socket.IO
             return;
           }          
           client_response.setResponse(false, false, "NO Vacation To Delete ! ", []);
@@ -263,13 +267,16 @@ router.put('/', (req, res, next) => {
   con.query(`UPDATE vacations SET vac_desc=?,dest=?,pic=?,date_start=?,date_end=?,price=?,follow_num=? WHERE vac_id=?`, [vac_desc, dest, pic, d_start, d_end, price, follow_num, vac_id], function (err, result, fields) {
       if (err) {
           console.log(err);
-          client_response.setResponse(false, true, "There Was an Error Updating Vacation To DB...", err);
+          client_response.setResponse(false, true, "There Was an Error Updating Vacation To DB...", err.sqlMessage);
           res.status(500).json(client_response.getData());
           return;
       }
       if (result.affectedRows > 0) {
         client_response.setResponse(true, false, "Vacation was Updated Succesfully", []);
         res.status(200).json(client_response.getData());
+        // Send msg to Client Via Socket.IO:
+        let vac_updated = JSON.stringify({vac_id: vac_id, vac_desc: vac_desc, dest: dest, pic: pic, date_start: date_start, date_end: date_end, price: price, follow_num: follow_num});
+        socket_io.socket_send(vac_updated);
         return;
       }
       client_response.setResponse(false, false, "NO Vacation To Update !", []);

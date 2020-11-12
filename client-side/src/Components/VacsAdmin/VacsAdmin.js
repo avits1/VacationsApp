@@ -25,11 +25,13 @@ class VacsAdmin extends React.Component {
                 } else if (respStatus === 401 || respStatus === 403) { /// not admin ! (or not logined)
                     this.props.history.push('/login'); // back to login
                 } else { // some error occured ..
-                    this.setState({ msg_text: res.message, message_ok: false, show_message: true});                    
+                    let total_msg = res.message + " " + res.data;
+                    this.setState({ msg_text: total_msg, message_ok: false, show_message: true});                    
                 }                
             })
-            .catch((err) => {               
-                this.setState({ msg_text: err.message, message_ok: false, show_message: true});                    
+            .catch((err) => {
+                let err_msg = err.message + " " + err.data;
+                this.setState({ msg_text: err_msg, message_ok: false, show_message: true});                    
             }); 
     }
 

@@ -35,7 +35,7 @@ module.exports = {
         console.log(reqIn.session);             
         
         let msgStr = placeStr + " - Not Logined !";
-        client_response.setResponse(false, false, msgStr, [{}]);
+        client_response.setResponse(false, false, msgStr, []);
         resIn.status(401).json(client_response.getData()); /// code 401 - Unauthorized // 403 - Forbidden      
         return(false);
     },    
@@ -52,7 +52,7 @@ module.exports = {
         console.log(reqIn.session);        
 
         let msgStr = placeStr + " - Not Admin !";
-        client_response.setResponse(false, false, msgStr, [{}]);
+        client_response.setResponse(false, false, msgStr, []);
         resIn.status(403).json(client_response.getData()); /// code 401 - Unauthorized // 403 - Forbidden      
         return(false);
     }    

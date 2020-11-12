@@ -4,13 +4,10 @@ import { BrowserRouter as Router, Link } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";// local installed => npm i 
 
-
 class VacationUpdate extends React.Component {
-
     
-    constructor(props) {
+    constructor(props) { // TODO (1): check super(props) deprecated ??
         super(props);
-        
         if (this.props?.match?.params) {
             this.state.inner_vacation.vac_id = this.props.match.params.vac_id;
             this.state.inner_vacation.vac_desc = this.props.match.params.vac_desc;
@@ -74,13 +71,15 @@ class VacationUpdate extends React.Component {
          }
                 
         if (!this.state.inner_vacation.date_start || this.state.inner_vacation.date_start === 0
-                || this.state.inner_vacation.date_start === undefined || this.state.inner_vacation.date_start === NaN) {
+                || this.state.inner_vacation.date_start === undefined || isNaN(this.state.inner_vacation.date_start)) {
+
+                    
             this.updateStateMsg("Date of Start IS EMPTY !");
             return(false);
         }
         
         if (!this.state.inner_vacation.date_end || this.state.inner_vacation.date_end === 0
-                || this.state.inner_vacation.date_end === undefined || this.state.inner_vacation.date_end === NaN) {
+                || this.state.inner_vacation.date_end === undefined || isNaN(this.state.inner_vacation.date_end)) {                    
             this.updateStateMsg("Date of End IS EMPTY !");
             return(false);
         }
@@ -124,13 +123,13 @@ class VacationUpdate extends React.Component {
                     this.clear_form();
                     this.props.history.push('/vacations_admin'); // OR pop up close ..                                       
                 }
-                else {
+                else {                    
                     let total_msg = res2.message + " " + res2.data;
                     console.log(total_msg);
                     this.setState({ msg_text: total_msg, message_ok: false, show_message: true});
                 }                
             })
-            .catch(error =>  {
+            .catch(error =>  {                
                 let total_msg = error.message + " " + error.data;
                 console.log(total_msg);
                 this.setState({msg_text: "ERROR !! " + total_msg, message_ok: false, show_message: true});
@@ -173,9 +172,31 @@ class VacationUpdate extends React.Component {
             } );            
     }
 
+    componentDidMount() {        
+        this.checkAdmin(); // for update as Routed Component - add admin check && redirect
+    }
 
-    componentDidMount() {
-        // TODO:  for update as Routed Component - add admin check && redirect        
+    checkAdmin() {
+        let respStatus = 0;          
+        fetch('/users/admin_logined')
+            .then((res) => {
+                respStatus = res.status;
+                return res.json();
+            })        
+            .then((res) => {                
+                if (res.success) {
+                    return;
+                } else if (respStatus === 401 || respStatus === 403) { /// not admin ! (or not logined)
+                    this.props.history.push('/login'); // back to login
+                } else { // some error occured ..
+                    let total_msg = res.message + " " + res.data;
+                    this.setState({ msg_text: total_msg, message_ok: false, show_message: true});                    
+                }                
+            })
+            .catch((err) => {
+                let err_msg = err.message + " " + err.data;
+                this.setState({ msg_text: err_msg, message_ok: false, show_message: true});                    
+            }); 
     }
 
     handleChange(event) {        

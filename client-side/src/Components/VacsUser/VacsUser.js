@@ -1,19 +1,26 @@
-import React from 'react';
+import React  from 'react';
 import VacsMsgs from '../VacsMsgs/VacsMsgs';
 import VacationCube from '../VacationCube/VacationCube';
 import { BrowserRouter as Router, Link } from "react-router-dom";
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "http://127.0.0.1:4001";
+// const ENDPOINT = "http://www.vacationapp.com:4001";
 
 class VacsUser extends React.Component {
     state = {
         show_message: false,
         message_ok: true,
         msg_text: "",
+        vacationUpdated: null,
+        vacationToDelete: 0,        
         vacations: [], // user vacations
         followed: [] // followed data from vacs_follow table (for Current User !), As: 'vac_id': <vacation id followed>
     }
 
     to_follow = []; // auxiliary array to store ONLY (!) vacations that are FOLLOWED,
                     //  to attach later to the begining of vacations [].
+
+    socket = null;
 
     getVacations() {       
         let respStatus = 0;
@@ -29,13 +36,15 @@ class VacsUser extends React.Component {
                 } else if (respStatus === 401 || respStatus === 403) { /// not logined
                     this.props.history.push('/login'); // back to login
                 } else { // some error occured ..
+                    let total_msg = res2_vacs.message + " " + res2_vacs.data;
                     console.log("getVacations() - some error occured"); 
-                    this.setState({ msg_text: res2_vacs.message, message_ok: false, show_message: true});                    
+                    this.setState({ msg_text: total_msg, message_ok: false, show_message: true});                    
                 }
             })
             .catch((err) => {               
-                console.log("getVacations() - catch(err) -  error occured"); 
-                this.setState({ msg_text: err.message, message_ok: false, show_message: true});                    
+                console.log("getVacations() - catch(err) -  error occured");
+                let err_msg = err.message + " " + err.data;
+                this.setState({ msg_text: err_msg, message_ok: false, show_message: true});                    
             });           
     }
 
@@ -154,10 +163,45 @@ class VacsUser extends React.Component {
 
     componentDidMount() {
         this.setState({ error: "", show_warning: false});        
+        this.socket = socketIOClient(ENDPOINT);
+        this.socket.on("VacationUpdate", updated => {
+            this.setState({vacationUpdated: JSON.parse(updated)});
+            this.updateVaction(this.state.vacationUpdated);
+         });
+         this.socket.on("VacationDel", deleted => {
+            this.setState({vacationToDelete: deleted});
+            this.delVaction(this.state.vacationToDelete);
+         });
         this.getVacations();                                         
     }
 
+    componentWillUnmount() {
+        this.socket.disconnect();
+        this.setState({vacationUpdated: null});
+        this.setState({vacationToDelete: 0});
+        this.socket = null;
+    }
+    
+    updateVaction(updated) { // update vacation in array or add new one.        
+        let indxUpd = this.state.vacations.findIndex(x => x.vac_id === updated.vac_id);
+        if (indxUpd >= 0) {
+            this.state.vacations[indxUpd] = updated;
+        } else {
+            this.state.vacations.push(updated);            
+        }
+        this.setState({});
+    }
+
+    delVaction(deleted) { // remove vacation from the array
+        let indxDel = this.state.vacations.findIndex(x => x.vac_id === deleted);
+        if (indxDel >= 0) {
+            this.state.vacations.splice(indxDel, 1);
+            this.setState({});
+        }
+    }
+
     render() {
+
         return (
             <div className="border border-success p-4">
                 <div className="row"> 

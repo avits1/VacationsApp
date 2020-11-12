@@ -186,6 +186,16 @@ router.post('/logout', (req, res, next) => {
   });
 });
 
+router.get('/admin_logined', function (req, res, next) {      
+  client_response.clear();      
+
+  if (!authen.is_admin_reply(req,res,"Admin Logined")) { // not admin !  
+    return;
+  }
+  client_response.setResponse(true, false, "Admin Is Logined Now", []);
+  res.status(200).json(client_response.getData()); 
+  });
+
 
 /*
 router.get('/is_admin', function (req, res, next) {      

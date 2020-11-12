@@ -1,4 +1,6 @@
 import React from 'react';
+// import React, { useState, useEffect } from "react"; // using react Hooks !
+// import socketIOClient from "socket.io-client";
 import './App.css';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Login from './Components/Login/Login';
@@ -10,17 +12,26 @@ import VacationUpdate from './Components/VacationUpdate/VacationUpdate';
 import VacsReport from './Components/VacsReport/VacsReport';
 import VacsMsgs from './Components/VacsMsgs/VacsMsgs';
 
+// const ENDPOINT = "http://127.0.0.1:4001";
 /// TODO:
-// * Code Improve & Async/Await
-// ** vacation sort - check & fix
-// 1. Socket.IO
-// 2. Vacation Update AS Pop Up
-// 3. Dates AS Moment.JS
-// 4.0 Graph Component
-// 4.1 Server Side: Update NodeJS (to after 14.2.0)
-// 4.2 Server Side: Use Optional Chaining => [ if (arg1?.arg2?.foo .. ) ]
-// 5. UX improvements
-// 6. Web Deploy
+// * Code Improves. Done.
+// ** vacation sort - check & fix. Done.
+// 1. Socket.IO - Done. // NodeJS Session checked in parallel on regular Chrome Browser & Incognito Mode.
+// 2. Vacation Add/Update with Admin Check. Done.
+// 3. Wrap some SQL Commands with Try/Catch. Done.
+// 4. Apply Async/Await in NodeJS multiple DB Calls (using mysql2). Done.
+// 5. Vacation Update AS Pop Up.
+// 6. Dates AS Moment.JS & AS Local Time (IL).
+// 7.0 Graph Component.
+// ** END PHASE 2 - ready for GitHub display
+
+// ** update react to 16.13 + ??
+// 8.1 Server Side: Update NodeJS (to after 14.2.0)
+// 8.2 Server Side: Use Optional Chaining => [ if (arg1?.arg2?.foo .. ) ]
+// 9.0 Apply AUTH Passport
+// 10 UX improvements
+// 11 Web Deploy/Hosting
+// ** END PHASE 3 - ready to show
 
 class App extends React.Component {
   
@@ -31,6 +42,7 @@ class App extends React.Component {
   }
 
   render() {
+
       return (
           <div className="App container">
             <div className="row">            

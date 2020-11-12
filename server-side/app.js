@@ -5,8 +5,7 @@ var path = require('path');
 var logger = require('morgan');
 var session = require('express-session')
 // for debug: SET DEBUG=express-session
-const http = require('http');
-const socketIo = require('socket.io');
+var socket_io = require('./modules/socket_io' ); /// socket-io modul - init and send
 
 // var passport = require('passport');
 // var LocalStrategy = require('passport-local');
@@ -16,7 +15,6 @@ const socketIo = require('socket.io');
 
 // TODO1: apply Socket.IO for Node server
 
-// const port = process.env.PORT || 4001; /// TODO
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var vacationsRouter = require('./routes/vacations');
@@ -56,11 +54,11 @@ app.use(session({
     // cookie: { httpOnly: true, secure: false, maxAge: 60000 * 120} // = 2 hours // 30 * 86400 * 1000 = 30 days
     cookie: { sameSite: true, httpOnly: true, secure: false, maxAge: 60000 * 120} // 30 * 86400 * 1000    
 }))
-/*
-const server = http.createServer(app);
-const io = socketIo(server);
-const getApiAndEmit = "TODO"; /// TEST /// 
-*/ /// TODO
+
+if (!socket_io.init_socket (app)) /// init Socket IO and listen to port
+{
+  console.log("Server Init of Socket IO - Can't Init. Some Error Occured !");
+} 
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
