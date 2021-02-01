@@ -2,16 +2,15 @@ import React from 'react';
 import VacsMsgs from '../VacsMsgs/VacsMsgs';
 import { BrowserRouter as Router,  Link } from "react-router-dom";
 import VacationCube from '../VacationCube/VacationCube';
-import VacationPopup from '../VacationPopup/VacationPopup'
 
-class VacsAdmin extends React.Component {
+class VacsAdminToUpdate extends React.Component {
     state = {
         show_message: false,
         message_ok: true,
         msg_text: "",
         vacations: [],
-        modalOpen: false,
-        user_id: 0
+        open: true,
+        user_id: 99
     }
 
     curr_date = Date.now(); 
@@ -22,15 +21,15 @@ class VacsAdmin extends React.Component {
         pic: "",            
         date_start: this.curr_date,             
         date_end: this.curr_date,
-        price: 0.0,
+        price: 0,
         follow_num: 0
     }
-    
-    getVacationsAdmin = () => {        
+
+    getVacationsAdmin() {        
         let respStatus = 0;          
         fetch('/vacations/admin')
-        .then((res) => {
-            respStatus = res.status;
+            .then((res) => {
+                respStatus = res.status;
                 return res.json();
             })        
             .then((res) => {                
@@ -46,56 +45,18 @@ class VacsAdmin extends React.Component {
             .catch((err) => {
                 let err_msg = err.message + " " + err.data;
                 this.setState({ msg_text: err_msg, message_ok: false, show_message: true});                    
-        }); 
-    }
-    
-    componentDidMount = () => {
-        this.setState({ msg_text: "", show_message: false, message_ok: true});        
-        this.getVacationsAdmin();
-    }
-    
-    // to open or close Modal Wrapper Component based on reactjs-popup lib.
-    handleModalOpen = (clearOnClose=false, refresh=false) => {
-        this.setState({ modalOpen: !this.state.modalOpen });
-        if (clearOnClose) {
-            this.clearVacation();
-        }
-        if (refresh) {
-            this.componentDidMount();
-        }
+            }); 
     }
 
-    clearVacation = () => {
-        this.vacation_edit.vac_id = 0; 
-        this.vacation_edit.vac_desc = "";
-        this.vacation_edit.dest = "";
-        this.vacation_edit.pic = "";
-        this.vacation_edit.price = 0.0;
-        this.vacation_edit.date_start = this.curr_date;
-        this.vacation_edit.date_end = this.curr_date;
-        this.vacation_edit.follow_num = 0;  
-    }
-   
-    editVacation = (vacation) => { // pop-up with vacation datails:
-        this.vacation_edit.vac_id = vacation.vac_id;
-        this.vacation_edit.vac_desc = vacation.vac_desc;
-        this.vacation_edit.dest = vacation.dest;
-        this.vacation_edit.pic = vacation.pic;
-        this.vacation_edit.price = vacation.price;
-        this.vacation_edit.date_start = vacation.date_start;
-        this.vacation_edit.date_end = vacation.date_end;
-        this.vacation_edit.follow_num = vacation.follow_num;
 
-        this.handleModalOpen();            
+    editVacation(vacation) {                
+        // Edit Screen as Routed Component:
+        this.props.history.push('/vacation_update/' + vacation.vac_id + '/'  + vacation.vac_desc + '/' + vacation.dest + '/' +  vacation.pic
+         + '/' + vacation.price + '/' + vacation.date_start + '/' + vacation.date_end + '/' + vacation.follow_num);
+        
     }
-          
-    // addVacation()  {  //  Will Not Work .. !!
-    addVacation = () => {  // use JS Arrow Function for *this* in the right context (!!) 
-        this.clearVacation();
-        this.handleModalOpen();       
-    }
-    
-    deleteVacation = (vac_id) => {
+
+    deleteVacation(vac_id) {
             
         fetch('/vacations/', {
             method: "DELETE",
@@ -118,27 +79,36 @@ class VacsAdmin extends React.Component {
         
     }
 
-    logout = () => {          
+    componentDidMount() {
+        this.setState({ error: "", show_warning: false});        
+        this.getVacationsAdmin();
+    }
+
+    addVacation() {        
+        console.log("addVacation() was pressed");
+        this.props.history.push('/vacation_update');
+    }
+    
+    logout() {          
         this.props.mainLogout();
         // this.props.history.push('/logout');
     }
 
-    render() {       
+    render() {
+       
         return (
             <div className="border border-primary p-4">
 
-                <VacationPopup modalOpen={this.state.modalOpen} vacation_obj={this.vacation_edit} handleModalOpen={this.handleModalOpen} />
                 <div className="row">
 
                     <div className="col-3">
-                        <div className="btn btn-primary mb-2" onClick={this.addVacation}>Add Vacation</div>
+                        <Link className="btn btn-primary mb-2" to="/vacation_add">Add Vacation</Link>
                     </div>
-                    <div className="col-5">                            
+                    <div className="col-7">                            
                         <h3>Manage Vacations</h3>                        
                     </div>
-                    <div className="col-4">
-                        <Link to="/vacations_user" className="btn btn-success mb-2 mr-2" >Tag Vacation</Link>                        
-                        <Link to="/logout" className="btn btn-danger mb-2" >Logout</Link>
+                    <div className="col-2">                            
+                        <Link to="/logout" className="btn btn-danger mb-2" >Logout</Link>                        
                     </div>                    
                 </div>                
                
@@ -171,4 +141,4 @@ class VacsAdmin extends React.Component {
     }
 }
 
-export default VacsAdmin;
+export default VacsAdminToUpdate;

@@ -1,0 +1,16 @@
+
+/* Orig in index.css: */
+/* .popup-content{margin:auto;background:#fff;width:50%;padding:5px;border:1px solid #d7d7d7} */
+/* [role=tooltip].popup-content{width:200px;box-shadow:0 0 3px rgba(0,0,0,.16);border-radius:5px} */
+
+.popup-content {
+    width:80%;
+    border:2px solid green;
+}
+
+/* JSX CSS Styling: */
+.labelStyle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

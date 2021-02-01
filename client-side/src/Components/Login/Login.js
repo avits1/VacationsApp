@@ -71,6 +71,12 @@ class Login extends React.Component {
         return(true);
     }
 
+    onKeyUp(event) {
+        if (event.charCode === 13) {
+            this.login();
+        }
+    }
+
     handleChange(event) {
         this.setState({ [event.target.name]: event.target.value });
     }
@@ -88,7 +94,7 @@ class Login extends React.Component {
                         </div>
                         <div className="form-group col-md-6">
                             <label htmlFor="password" className="col-form-label col-form-label-md">Password</label>                            
-                            <input type="password" onChange={(e) => this.handleChange(e)} name="password" className="form-control" placeholder="password .. " value={this.state.password} />                            
+                            <input type="password" onChange={(e) => this.handleChange(e)} onKeyPress={this.onKeyUp.bind(this)} name="password" className="form-control" placeholder="password .. " value={this.state.password} />
                         </div>
                     </div>    
                         
