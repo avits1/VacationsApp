@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route } from "react-router-dom";
+// import Login from './Components/Login/LoginAsClass';
 import Login from './Components/Login/Login';
 import Logout from './Components/Logout/Logout';
 import Register from './Components/Register/Register';
@@ -21,11 +22,12 @@ import VacsMsgs from './Components/VacsMsgs/VacsMsgs';
 // 4. Apply Async/Await in NodeJS multiple DB Calls (using mysql2). Done.
 // 5. Vacation Update AS Pop Up. Split & Save VacsAdminToUpdate . Done.
 // 5.1 Link "Tag Vacation" from Admin Scn to User Scn. Done.
-// 5.2 Link "Manage" from User Scn (if it's admin) to Admin Scn.
-// 5.3 Login & VacsUser As Func. Components with Hooks.
+// 5.2 Link "Manage" from User Scn (if it's admin) to Admin Scn. Done.
+// 5.3 Login As Func. Component with Hooks. Done.
+// 5.4 VacsUser As Func. Component with Hooks.
 // 6. Dates AS Moment.JS & AS Local Time (IL).
 // 6.1 Code CleanUp.
-// 7.0 Graph Component & Report Scn connected with a Link/Button .
+// 7.0 Graph Component & Report Scn (with Material-UI ?) , connected with a Link/Button .
 // ** END PHASE 2 - ready for GitHub display
 
 // ** update react to 16.13 + ??

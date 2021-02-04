@@ -11,6 +11,7 @@ class VacsUser extends React.Component {
         show_message: false,
         message_ok: true,
         msg_text: "",
+        is_admin: false,
         vacationUpdated: null,
         vacationToDelete: 0,        
         vacations: [], // user vacations
@@ -172,6 +173,7 @@ class VacsUser extends React.Component {
             this.setState({vacationToDelete: deleted});
             this.delVaction(this.state.vacationToDelete);
          });
+        this.adminCheck();
         this.getVacations();                                         
     }
 
@@ -182,6 +184,33 @@ class VacsUser extends React.Component {
         this.socket = null;
     }
     
+    adminCheck() {
+        let respStatus = 0;          
+        fetch('/users/admin_logined')
+            .then((res) => {
+                respStatus = res.status;
+                return res.json();
+            })        
+            .then((res) => {                
+                if (res.success) {
+                    this.setState({is_admin: true});
+                    // this.state.is_admin = true;
+                    return;
+                }
+                // } else if (respStatus === 401 || respStatus === 403) { /// not admin ! (or not logined)
+                //     this.props.history.push('/login'); // back to login
+                // } else { // some error occured ..
+                //     let total_msg = res.message + " " + res.data;
+                //     this.setState({ msg_text: total_msg, message_ok: false, show_message: true});                    
+                // }                
+            })
+            .catch((err) => {
+                let err_msg = err.message + " " + err.data;
+                this.setState({ msg_text: err_msg, message_ok: false, show_message: true});                    
+            }); 
+    }
+
+
     updateVaction(updated) { // update vacation in array or add new one.        
         let indxUpd = this.state.vacations.findIndex(x => x.vac_id === updated.vac_id);
         if (indxUpd >= 0) {
@@ -209,7 +238,10 @@ class VacsUser extends React.Component {
                         {/* badge-info badge-primary badge-secondary */}
                         {(sessionStorage.first_name) ? <h3> <span className="badge badge-secondary">Hello {JSON.parse( sessionStorage.first_name)}</span> </h3> : null}                        
                     </div>
-                    <div className="col-8">                        
+                    <div className="col-6">                        
+                    </div>
+                    <div className="col-2">
+                        <Link to="/vacations_admin" className={(this.state.is_admin) ? "btn btn-success mb-2 " : "d-none btn btn-success mb-2"} >Manage</Link>
                     </div>
                     <div className="col-2">
                         <Link to="/logout" className="btn btn-danger mb-2" >Logout</Link>
