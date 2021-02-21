@@ -1,4 +1,4 @@
-import React  from 'react';
+import React, { useState, useEffect } from 'react';
 import VacsMsgs from '../VacsMsgs/VacsMsgs';
 import VacationCube from '../VacationCube/VacationCube';
 import { BrowserRouter as Router, Link } from "react-router-dom";
@@ -6,108 +6,113 @@ import socketIOClient from "socket.io-client";
 const ENDPOINT = "http://127.0.0.1:4001";
 // const ENDPOINT = "http://www.vacationapp.com:4001";
 
-class VacsUser extends React.Component {
-    state = {
-        show_message: false,
-        message_ok: true,
-        msg_text: "",
-        is_admin: false,
-        vacationUpdated: null,
-        vacationToDelete: 0,        
-        vacations: [], // user vacations
-        followed: [] // followed data from vacs_follow table (for Current User !), As: 'vac_id': <vacation id followed>
-    }
+const VacsUser = (props) =>  { 
 
-    to_follow = []; // auxiliary array to store ONLY (!) vacations that are FOLLOWED,
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [vacationUpdated, setVacationUpdated] = useState(null);
+    const [vacationToDelete, setVacationToDelete] = useState(0);
+    const [vacations, setVacations] = useState([]);
+    const [followed, setFollowed] = useState([]);
+
+    var vacations_temp = []; // temporary array to help sorting without mutate/render
+    let followed_temp = [];// followed temp array - will not cause state render.
+    var to_follow = []; // auxiliary array to store ONLY (!) vacations that are FOLLOWED,
                     //  to attach later to the begining of vacations [].
 
-    socket = null;
+    const [showMessage, setShowMessage] = useState(false); 
+    const [messageOk, setMessageOk] = useState(true); 
+    const [msgText, setMsgText] = useState("");
 
-    getVacations() {       
+    const updateStateMsg = (newMsg, msgOK = false) => {
+        setShowMessage(true);
+        setMessageOk(msgOK);
+        setMsgText(newMsg);
+    }
+
+    const getVacations = () => {       
         let respStatus = 0;
         fetch('/vacations/', {'cache':'no-store'})
             .then((res1_vacs) => {
-                respStatus = res1_vacs.status;                
+                respStatus = res1_vacs.status;
                 return res1_vacs.json();
             })
             .then((res2_vacs) => {                
-                if (res2_vacs.success) {                    
-                    this.state.vacations = res2_vacs.data;                    
-                    this.getFollows();
+                if (res2_vacs.success) {
+                    vacations_temp = res2_vacs.data;
+                    getFollows(vacations_temp);// move as param ,not causing render
                 } else if (respStatus === 401 || respStatus === 403) { /// not logined
-                    this.props.history.push('/login'); // back to login
+                    props.history.push('/login'); // back to login
                 } else { // some error occured ..
                     let total_msg = res2_vacs.message + " " + res2_vacs.data;
                     console.log("getVacations() - some error occured"); 
-                    this.setState({ msg_text: total_msg, message_ok: false, show_message: true});                    
+                    updateStateMsg(total_msg);
                 }
             })
             .catch((err) => {               
                 console.log("getVacations() - catch(err) -  error occured");
                 let err_msg = err.message + " " + err.data;
-                this.setState({ msg_text: err_msg, message_ok: false, show_message: true});                    
+                updateStateMsg(err_msg);
             });           
     }
 
-    getFollows() {        
+    const getFollows = (vacs_temp) => {        
         let respStatus = 0;
         fetch('/vacs_follow/', {'cache':'no-store'})
             .then((res1_follow) => {                
                 respStatus = res1_follow.status;                
                 if (respStatus === 204) {
                     res1_follow.data = [];
-                    this.state.followed = [];
+                    followed_temp = [];
                     return(res1_follow);
                 }                
                 return(res1_follow.json());
             })       
             .then((res2_follow) => {                                              
-                if (res2_follow.success) {                                                            
-                    this.state.followed = res2_follow.data;                    
-                    this.sortVacations();
-                    this.setState({});                    
+                if (res2_follow.success) {
+                    followed_temp = res2_follow.data;
+                    let len  = followed_temp.length;
+                    sortVacations(vacs_temp, followed_temp);
                 } else {                     
-                    this.setState({});
-                    this.setState({ msg_text: res2_follow.message, message_ok: false, show_message: true});                    
+                    updateStateMsg(res2_follow.message);
                 }
             })
             .catch(error =>  {                                               
                 let errMsg = "ERROR In Get Follow: " + error.message;
-                this.setState({msg_text: errMsg, message_ok: false, show_message: true});
+                updateStateMsg(errMsg);
             } );
     }
-    
-    sortVacations() {                
-        this.to_follow = [];                
-        if (this.state.followed.length === 0 || this.state.followed.length === this.state.vacations.length) {            
+
+    const sortVacations = (vacs_temp, followed_temp) => {                
+        to_follow = [];                
+        if (followed_temp.length === 0 || followed_temp.length === vacations.length) {            
             return; // DON'T CHANGE Vacations Data!
         } 
-        // else, do sort:                
-        this.state.followed.map(
+        // else, do sort:
+        followed_temp.map(
             (follower, findex) => {                
-                this.vacationToFollow(follower);                
+                vacationToFollow(vacs_temp, follower);                
                 return(true);
-            });        
+            });
+        
         // push to vacations array head:    
-        this.to_follow.map( (vac_followed) => {
-            this.state.vacations.unshift(vac_followed);
-            return(true);
-        });
+        let newVacations = [...to_follow, ...vacs_temp];
+        setFollowed(followed_temp); // for loop on render stage
+        setVacations(newVacations);
     }
 
-    vacationToFollow(follower) {        
-        for (let idx = 0; idx < this.state.vacations.length ; idx++) {
-            let vacationCurrent = this.state.vacations[idx];            
-            if(vacationCurrent.vac_id === follower.vac_id) {                                                
-                this.state.vacations.splice(idx, 1);                
-                this.to_follow.push(vacationCurrent);                
+    const vacationToFollow = (vacs_temp, follower) => {        
+        for (let idx = 0; idx < vacs_temp.length ; idx++) {
+            let vacationCurrent = vacs_temp[idx];            
+            if(vacationCurrent.vac_id === follower.vac_id) {
+                vacs_temp.splice(idx, 1);
+                to_follow.push(vacationCurrent);
                 break;                
             }
         }
     }
 
-    isFollowed(vacID) {               
-        for (let vacationFollow of this.state.followed) {
+    const isFollowed = (vacID) => {
+        for (let vacationFollow of followed) {
             if(vacationFollow.vac_id === vacID) {                
                 return(true);
             }                
@@ -116,7 +121,7 @@ class VacsUser extends React.Component {
     }
 
 
-    addFollowed(vac_id) {                
+    const addFollowed = (vac_id) => {                
         fetch("/vacs_follow/", {
             method: "POST",
             body: JSON.stringify({vac_id: vac_id}),
@@ -129,17 +134,18 @@ class VacsUser extends React.Component {
             })       
             .then((res2) => {                                          
                 if (res2.success) {                    
-                    this.getVacations();                    
+                    getVacations();                    
                 } else {
-                    this.setState({ msg_text: res2.message, message_ok: false, show_message: true});
+                    updateStateMsg(res2.message);
                 }                
             })
-            .catch(error =>  {                
-                this.setState({msg_text: "ERROR In Add Follow: " + error.message, message_ok: false, show_message: true});
+            .catch(error =>  {
+                let errMsg = "ERROR In Add Follow: " + error.message;
+                updateStateMsg(errMsg);
             } );
     }
  
- removeFollowed(vac_id) {            
+ const removeFollowed = (vac_id) => {            
     fetch('/vacs_follow/', {
         method: "DELETE",
         body: JSON.stringify({vac_id: vac_id}),
@@ -152,39 +158,40 @@ class VacsUser extends React.Component {
         })  
         .then((res2) => {                                      
             if (res2.success) {                                    
-                this.getVacations();
+                getVacations();
             } else {                
-                this.setState({ msg_text: res2.message, message_ok: false, show_message: true});
+                updateStateMsg(res2.message);
             }                
         })
-        .catch(error =>  {            
-            this.setState({msg_text: "ERROR In Delete Follow: " + error.message, message_ok: false, show_message: true});
+        .catch(error =>  {
+            let errMsg = "ERROR In Delete Follow: " + error.message;
+            updateStateMsg(errMsg);
         } );      
     }
-
-    componentDidMount() {
-        this.setState({ error: "", show_warning: false});        
-        this.socket = socketIOClient(ENDPOINT);
-        this.socket.on("VacationUpdate", updated => {
-            this.setState({vacationUpdated: JSON.parse(updated)});
-            this.updateVaction(this.state.vacationUpdated);
-         });
-         this.socket.on("VacationDel", deleted => {
-            this.setState({vacationToDelete: deleted});
-            this.delVaction(this.state.vacationToDelete);
-         });
-        this.adminCheck();
-        this.getVacations();                                         
-    }
-
-    componentWillUnmount() {
-        this.socket.disconnect();
-        this.setState({vacationUpdated: null});
-        this.setState({vacationToDelete: 0});
-        this.socket = null;
-    }
     
-    adminCheck() {
+    useEffect(() => {
+        setShowMessage(false); setMessageOk(true); setMsgText("");
+        const socket = socketIOClient(ENDPOINT);
+        socket.on("VacationUpdate", updated => {
+            setVacationUpdated(JSON.parse(updated));
+            updateVaction(vacationUpdated);
+         });
+         socket.on("VacationDel", deleted => {
+            setVacationToDelete(deleted);
+            delVaction(vacationToDelete);
+         });
+        adminCheck();
+        getVacations();
+        return () => closeSocket(socket); // => this func. cleans up the effect, like componentWillUnmount()
+    }, []);
+
+    const closeSocket = (socket) => {
+        socket.disconnect();
+        setVacationUpdated(null);
+        setVacationToDelete(0);
+    }
+
+    const adminCheck = () => {
         let respStatus = 0;          
         fetch('/users/admin_logined')
             .then((res) => {
@@ -193,87 +200,83 @@ class VacsUser extends React.Component {
             })        
             .then((res) => {                
                 if (res.success) {
-                    this.setState({is_admin: true});
-                    // this.state.is_admin = true;
+                    setIsAdmin(true);
                     return;
                 }
-                // } else if (respStatus === 401 || respStatus === 403) { /// not admin ! (or not logined)
-                //     this.props.history.push('/login'); // back to login
-                // } else { // some error occured ..
-                //     let total_msg = res.message + " " + res.data;
-                //     this.setState({ msg_text: total_msg, message_ok: false, show_message: true});                    
-                // }                
             })
             .catch((err) => {
-                let err_msg = err.message + " " + err.data;
-                this.setState({ msg_text: err_msg, message_ok: false, show_message: true});                    
+                let errMsg = err.message + " " + err.data;
+                updateStateMsg(errMsg);
             }); 
     }
 
 
-    updateVaction(updated) { // update vacation in array or add new one.        
-        let indxUpd = this.state.vacations.findIndex(x => x.vac_id === updated.vac_id);
+    const updateVaction = (updated) => { // update vacation in array or add new one.        
+        let indxUpd = vacations.findIndex(x => x.vac_id === updated.vac_id);
+        vacations_temp = vacations;
         if (indxUpd >= 0) {
-            this.state.vacations[indxUpd] = updated;
+            vacations_temp[indxUpd] = updated; // Replace on temp array ..
+            setVacations(vacations_temp);            
         } else {
-            this.state.vacations.push(updated);            
+            setVacations(...vacations, updated); // OR: add directly
         }
-        this.setState({});
     }
 
-    delVaction(deleted) { // remove vacation from the array
-        let indxDel = this.state.vacations.findIndex(x => x.vac_id === deleted);
+    const delVaction = (deleted) => { // remove vacation from the array
+        let indxDel = vacations.findIndex(x => x.vac_id === deleted);
+        vacations_temp = vacations;
         if (indxDel >= 0) {
-            this.state.vacations.splice(indxDel, 1);
-            this.setState({});
+            vacations_temp.splice(indxDel, 1);
+            setVacations(vacations_temp);
         }
     }
 
-    render() {
-
-        return (
-            <div className="border border-success p-4">
-                <div className="row"> 
-                    <div className="col-2">
-                        {/* badge-info badge-primary badge-secondary */}
-                        {(sessionStorage.first_name) ? <h3> <span className="badge badge-secondary">Hello {JSON.parse( sessionStorage.first_name)}</span> </h3> : null}                        
-                    </div>
-                    <div className="col-6">                        
-                    </div>
-                    <div className="col-2">
-                        <Link to="/vacations_admin" className={(this.state.is_admin) ? "btn btn-success mb-2 " : "d-none btn btn-success mb-2"} >Manage</Link>
-                    </div>
-                    <div className="col-2">
-                        <Link to="/logout" className="btn btn-danger mb-2" >Logout</Link>
-                    </div>
+    return (
+        <div className="border border-success p-4">
+            <div className="row"> 
+                <div className="col-2">
+                    {/* badge-info badge-primary badge-secondary */}
+                    {(sessionStorage.first_name) ? <h3> <span className="badge badge-secondary">Hello {JSON.parse( sessionStorage.first_name)}</span> </h3> : null}                        
                 </div>
-                               
-               <VacsMsgs success={this.state.message_ok} show_msg={this.state.show_message} message={this.state.msg_text} />                              
-                <div className="row">                
-                    <div className="col-12">
-                                                                                                                                                                          
-                        <div id="vacations_cubes">
-                            <div className='row inner_vacs'>
-                                { (this.state.vacations.length === 0) ?
-                                   <h2> No Vacations Found !</h2> 
-                                   : 
-                                    this.state.vacations.map(
-                                        (vacation, vindex) => {
-                                            let followed = this.isFollowed(vacation.vac_id);                                            
-                                            return (                                                
-                                                <div key={vindex} className="col-4 p1 mb1 border border-primary">                                                                                                      
-                                                    <VacationCube vcube={vacation} is_admin={false} is_followed={followed}
-                                                       deleteVacation={null} addFollowed={(e) => this.addFollowed(e, vacation.vac_id)} removeFollowed={(e) => this.removeFollowed(e, vacation.vac_id)} />
-                                                </div>
-                                            )}
-                                    )}
-                            </div>
-                            </div>
-                    </div>                  
+                <div className="col-6">                        
+                </div>
+                <div className="col-2">
+                    <Link to="/vacations_admin" className={(isAdmin) ? "btn btn-success mb-2 " : "d-none btn btn-success mb-2"} >Manage</Link>
+                </div>
+                <div className="col-2">
+                    <Link to="/logout" className="btn btn-danger mb-2" >Logout</Link>
                 </div>
             </div>
-        )
-    }
+
+            <VacsMsgs success={messageOk} show_msg={showMessage} message={msgText} />
+            <div className="row">                
+                <div className="col-12">
+                                                                                                                                                                        
+                    <div id="vacations_cubes">
+                        <div className='row inner_vacs'>
+                            {
+                                (vacations.length === 0) ? (
+                                <div>
+                                    <h2> No Vacations Found !</h2> 
+                                </div>
+                                ) :
+                                 (vacations.map((vacation, vindex) => {
+                                        let isfollowed = isFollowed(vacation.vac_id);                                            
+                                        return (   
+                                            <div key={vindex} className="col-4 p1 mb1 border border-primary">                                                                                                      
+                                                <VacationCube vcube={vacation} userIsAdmin={false} is_followed={isfollowed}
+                                                    deleteVacation={null} addFollowed={() => addFollowed(vacation.vac_id)} removeFollowed={() => removeFollowed(vacation.vac_id)} />
+                                            </div>
+                                        )
+                                    }
+                                ))
+                                }
+                        </div>
+                        </div>
+                </div>                  
+            </div>
+        </div>
+    )
 }
 
 export default VacsUser;

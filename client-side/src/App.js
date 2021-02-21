@@ -24,7 +24,7 @@ import VacsMsgs from './Components/VacsMsgs/VacsMsgs';
 // 5.1 Link "Tag Vacation" from Admin Scn to User Scn. Done.
 // 5.2 Link "Manage" from User Scn (if it's admin) to Admin Scn. Done.
 // 5.3 Login As Func. Component with Hooks. Done.
-// 5.4 VacsUser As Func. Component with Hooks.
+// 5.4 VacsUser As Func. Component with React Hooks. Done.
 // 6. Dates AS Moment.JS & AS Local Time (IL).
 // 6.1 Code CleanUp.
 // 7.0 Graph Component & Report Scn (with Material-UI ?) , connected with a Link/Button .
