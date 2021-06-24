@@ -3,7 +3,8 @@ import VacsBanner from '../VacsBanner/VacsBanner';
 import VacsMsgs from '../VacsMsgs/VacsMsgs';
 import { BrowserRouter as Router, Link } from "react-router-dom";
 
-const STANDARD_ROLE = 2;
+const STANDARD_ROLE = 3;
+const SU_ROLE = 2;
 const Login = (props) =>  { 
         
     const [showMessage, setShowMessage] = useState(false); 
@@ -61,9 +62,11 @@ const Login = (props) =>  {
                     if (res?.data?.username) {                        
                         sessionStorage.first_name = JSON.stringify(res.data.first_name);
                     }
-                    if (res.data.role > 0 && res.data.role < STANDARD_ROLE) {                        
+                    if (res.data.role > 0 && res.data.role < SU_ROLE) {                        
                         props.history.push('/vacations_admin');                        
-                    } else {                        
+                    } else if (res.data.role > 0 && res.data.role < STANDARD_ROLE) {                        
+                        props.history.push('/vacations_user');                        
+                    } else {  
                         props.history.push('/vacations_user');                                               
                     }
                 } else {    // login failed !                                                                       
@@ -108,24 +111,22 @@ const Login = (props) =>  {
         <div className="row border border-primary">                
             <div className="col-9 border border-dark border-left-0 border-bottom-0 border-top-0 p-1">                
                 <div className="form">
-                
-                <div className="form-row">
-                    <div className="form-group col-md-6">
-                        <label htmlFor="username" className="col-form-label col-form-label-md">Username</label>                            
-                        <input type="text" onChange={handleUsernameInput} name="username" className="form-control" placeholder="username .." value={username} />
-                        {/* <input type="text" onChange={inputsHandler} name="username" className="form-control" placeholder="username .." value={inputField.username} /> */}
-                    </div>
-                    <div className="form-group col-md-6">
-                        <label htmlFor="password" className="col-form-label col-form-label-md">Password</label>                            
-                        <input type="password" onChange={handlePasswordInput} onKeyPress={(e) => onKeyUp(e)} name="password" className="form-control" placeholder="password .. " value={password} />
-                        {/* <input type="password" onChange={inputsHandler} onKeyPress={(e) => onKeyUp(e)} name="password" className="form-control" placeholder="password .. " value={inputField.password} /> */}
-                    </div>
-                </div>    
-                    
-                    <VacsMsgs success={messageOk} show_msg={showMessage} message={msgText} />                                        
-                    <div className="btn btn-primary mb-2" onClick={login}>Login</div>
+                    <div className="form-row">
+                        <div className="form-group col-md-6">
+                            <label htmlFor="username" className="col-form-label col-form-label-md">Username</label>                            
+                            <input type="text" onChange={handleUsernameInput} name="username" className="form-control" placeholder="username .." value={username} />
+                            {/* <input type="text" onChange={inputsHandler} name="username" className="form-control" placeholder="username .." value={inputField.username} /> */}
+                        </div>
+                        <div className="form-group col-md-6">
+                            <label htmlFor="password" className="col-form-label col-form-label-md">Password</label>                            
+                            <input type="password" onChange={handlePasswordInput} onKeyPress={(e) => onKeyUp(e)} name="password" className="form-control" placeholder="password .. " value={password} />
+                            {/* <input type="password" onChange={inputsHandler} onKeyPress={(e) => onKeyUp(e)} name="password" className="form-control" placeholder="password .. " value={inputField.password} /> */}
+                        </div>
+                    </div>    
+                        <VacsMsgs success={messageOk} show_msg={showMessage} message={msgText} />                                        
+                        <div className="btn btn-primary mb-2" onClick={login}>Login</div>
                 </div>
-                <Link to="/register">New User? Please Register</Link>
+                    <Link to="/register">New User? Please Register</Link>
             </div>
             
             <div className="col-3">

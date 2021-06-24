@@ -1,18 +1,16 @@
 import React from 'react';
 import './App.css';
 import { BrowserRouter as Router, Route } from "react-router-dom";
-// import Login from './Components/Login/LoginAsClass';
 import Login from './Components/Login/Login';
 import Logout from './Components/Logout/Logout';
 import Register from './Components/Register/Register';
 import VacsUser from './Components/VacsUser/VacsUser';
 import VacsAdmin from './Components/VacsAdmin/VacsAdmin';
-// import VacsAdminToUpdate from './Components/VacsAdmin/VacsAdminToUpdate'; // for Update As Route
-// import VacationUpdate from './Components/VacationUpdate/VacationUpdate';
 import VacsReport from './Components/VacsReport/VacsReport';
 import VacsMsgs from './Components/VacsMsgs/VacsMsgs';
 
-// const ENDPOINT = "http://127.0.0.1:4001";
+// const LOCALENDPOINT = "http://127.0.0.1:4001";
+// const HOSTENDPOINT = "http://www.vacationapp.com:4001"; 
 /// TODO:
 // * Code Improves. Done.
 // ** vacation sort - check & fix. Done.
@@ -25,20 +23,30 @@ import VacsMsgs from './Components/VacsMsgs/VacsMsgs';
 // 5.2 Link "Manage" from User Scn (if it's admin) to Admin Scn. Done.
 // 5.3 Login As Func. Component with Hooks. Done.
 // 5.4 VacsUser As Func. Component with React Hooks. Done.
-// 6. Dates AS Moment.JS & AS Local Time (IL).
-// 6.1 Code CleanUp.
-// 7.0 Graph Component & Report Scn (with Material-UI ?) , connected with a Link/Button .
-// ** END PHASE 2 - ready for GitHub display
 
+// 6. Dates AS Moment.JS & AS Local Time (IL). Done.
+// 7.0 Graph Component & Report Scn (first Using Victory lib.) , connected with a Link/Button. Done.
+// 7.1 Improved Graph As ChartJS. Done.
+// 7.2 Bug Fix & Code CleanUp. Github Commit/Push. Done.
+
+// ** PHASE 2 - Prepare to Hosting.
+// 8.0 apply SU/semi-admin => superuser: db setting, role, passwords, auten
+// 8.1 apply SU/semi-admin: create, update & delete it's own vacations.
+// 8.2 semi-admin - picture from fixed folder
+// 8.3 add server side log
+// 8.4 upgrade to Github account with private files/folders ?
+
+// ** PHASE 3 - ready for basic Hosting (review/feedback purpose)
+// 8.6 prepare for hosting
+// 8.7 basic Hosting On: Heroko or Netify or ..
 // ** update react to 16.13 + ??
-// 8.0 Client Side: Apply some Redux/useReducer/(Saga ??)
-// 8.1 Server Side: Update NodeJS (to after 14.2.0)
-// 8.2 Server Side: Use Optional Chaining => [ if (arg1?.arg2?.foo .. ) ]
-// 9.0 Optional: Apply AUTH Passport
-// 10 UX improvements: Spiner Admin, Forms , ..
-// 11 Web Deploy/Hosting
-// 12 Optional: Hosting includes AUTH with SSH
-// ** END PHASE 3 - ready to show
+// 9.0 Client Side: Apply some useReducer/Redux/Mbox
+// 9.1 Server Side: Update NodeJS (to after 14.2.0)
+// 9.2 Server Side: Use Optional Chaining => [ if (arg1?.arg2?.foo .. ) ]
+// 10.0 Optional: Apply AUTH Passport
+// 11 UX improvements: Spiner Admin, Forms , ..
+// 12 Web Deploy/Hosting, with  AUTH with SSH/SSL
+// ** END PHASE 4 - ready to show
 
 class App extends React.Component {
   
@@ -75,12 +83,7 @@ class App extends React.Component {
                               <Route exact path="/home" component={Login} />
                               <Route path="/register" component={Register} />
                               <Route path="/vacations_user" component={VacsUser} />
-                              {/* // for update in popup: */}
                               <Route path="/vacations_admin" component={VacsAdmin} />
-                              {/* // for update as route: */}
-                              {/* <Route path="/vacations_admin" component={VacsAdminToUpdate} /> */}
-                              {/* <Route path="/vacation_add" component={VacationUpdate} /> */}
-                              {/* <Route path="/vacation_update/:vac_id/:vac_desc/:dest/:pic/:price/:date_start/:date_end/:follow_num" component={VacationUpdate} /> */}
                               <Route path="/vacations_report" component={VacsReport} />
                           </div>
                       </Router>

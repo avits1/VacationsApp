@@ -1,7 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-// var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session')
 // for debug: SET DEBUG=express-session
@@ -12,17 +11,17 @@ var socket_io = require('./modules/socket_io' ); /// socket-io modul - init and 
 // const bcrypt = require('bcrypt');
 
 // var cors = require('cors'); // for CORS (!)
-
-// TODO1: apply Socket.IO for Node server
-
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var vacationsRouter = require('./routes/vacations');
 var vacsFollowRouter = require('./routes/vacs_follow');
+var reportRouter = require('./routes/report');
 
-// TODO:
-// 1. Update NodeJS (to after 14.2.0)
-// 2. Use Optional Chaining => [ if (arg1?.arg2?.foo .. ) ]
+// TODO (App Server Side):
+// 1. add is_su_reply() to auten.js
+// 2. add server side log
+// 3. Update NodeJS (to after 14.2.0)
+// 4. Use Optional Chaining => [ if (arg1?.arg2?.foo .. ) ]
 
 var app = express();
 // app.use(cors()); // use CORS when necessary(!)
@@ -51,8 +50,7 @@ app.use(session({
     secret: 'keyboard cat',
     resave: false,
     saveUninitialized: true,    
-    // cookie: { httpOnly: true, secure: false, maxAge: 60000 * 120} // = 2 hours // 30 * 86400 * 1000 = 30 days
-    cookie: { sameSite: true, httpOnly: true, secure: false, maxAge: 60000 * 120} // 30 * 86400 * 1000    
+    cookie: { sameSite: true, httpOnly: true, secure: false, maxAge: 60000 * 120} // = 2 hours // 30 * 86400 * 1000 = 30 days
 }))
 
 if (!socket_io.init_socket (app)) /// init Socket IO and listen to port
@@ -67,13 +65,13 @@ app.set('view engine', 'pug');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/vacations', vacationsRouter);
 app.use('/vacs_follow', vacsFollowRouter);
+app.use('/report', reportRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

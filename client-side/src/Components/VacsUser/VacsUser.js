@@ -3,8 +3,8 @@ import VacsMsgs from '../VacsMsgs/VacsMsgs';
 import VacationCube from '../VacationCube/VacationCube';
 import { BrowserRouter as Router, Link } from "react-router-dom";
 import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4001";
-// const ENDPOINT = "http://www.vacationapp.com:4001";
+const LOCALENDPOINT = "http://127.0.0.1:4001";
+// const HOSTENDPOINT = "http://www.vacationapp.com:4001";
 
 const VacsUser = (props) =>  { 
 
@@ -36,7 +36,7 @@ const VacsUser = (props) =>  {
                 respStatus = res1_vacs.status;
                 return res1_vacs.json();
             })
-            .then((res2_vacs) => {                
+            .then((res2_vacs) => {
                 if (res2_vacs.success) {
                     vacations_temp = res2_vacs.data;
                     getFollows(vacations_temp);// move as param ,not causing render
@@ -70,10 +70,10 @@ const VacsUser = (props) =>  {
             .then((res2_follow) => {                                              
                 if (res2_follow.success) {
                     followed_temp = res2_follow.data;
-                    let len  = followed_temp.length;
                     sortVacations(vacs_temp, followed_temp);
                 } else {                     
                     updateStateMsg(res2_follow.message);
+                    setVacations(vacs_temp);
                 }
             })
             .catch(error =>  {                                               
@@ -85,6 +85,7 @@ const VacsUser = (props) =>  {
     const sortVacations = (vacs_temp, followed_temp) => {                
         to_follow = [];                
         if (followed_temp.length === 0 || followed_temp.length === vacations.length) {            
+            setVacations(vacs_temp);
             return; // DON'T CHANGE Vacations Data!
         } 
         // else, do sort:
@@ -171,7 +172,7 @@ const VacsUser = (props) =>  {
     
     useEffect(() => {
         setShowMessage(false); setMessageOk(true); setMsgText("");
-        const socket = socketIOClient(ENDPOINT);
+        const socket = socketIOClient(LOCALENDPOINT);
         socket.on("VacationUpdate", updated => {
             setVacationUpdated(JSON.parse(updated));
             updateVaction(vacationUpdated);
@@ -215,7 +216,7 @@ const VacsUser = (props) =>  {
         let indxUpd = vacations.findIndex(x => x.vac_id === updated.vac_id);
         vacations_temp = vacations;
         if (indxUpd >= 0) {
-            vacations_temp[indxUpd] = updated; // Replace on temp array ..
+            vacations_temp[indxUpd] = updated; // Do Replace on temp array ..
             setVacations(vacations_temp);            
         } else {
             setVacations(...vacations, updated); // OR: add directly

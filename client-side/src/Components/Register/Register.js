@@ -9,12 +9,10 @@ class Register extends React.Component {
         show_message: false,
         message_ok: true,
         msg_text: "",
-        // user_unique: false,
         first_name: "",
         last_name: "",
         username: "",
         password: ""
-        // email: ""        
     }
 
     updateStateMsg(newMsg) {
@@ -57,7 +55,7 @@ class Register extends React.Component {
         fetch("/users/register", {
             method: "POST",
             body: JSON.stringify({ "first_name": this.state.first_name, "last_name": this.state.last_name,
-                                "username": this.state.username, "password": this.state.password }), //  , "email": this.state.email                               
+                                "username": this.state.username, "password": this.state.password }), 
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -97,7 +95,6 @@ class Register extends React.Component {
             last_name: "",
             username: "",
             password: ""
-            // email: ""
         });        
     }
 
@@ -127,10 +124,6 @@ class Register extends React.Component {
                             </div>
                         </div>                        
                         
-                        {/* <div className="form-group">
-                            <label>Email</label>
-                            <input type="email" onChange={this.handleChange.bind(this)} name="email" className="form-control" placeholder="email" value={this.state.email} />
-                        </div> */}
                         <VacsMsgs success={this.state.message_ok} show_msg={this.state.show_message} message={this.state.msg_text} />                                        
                         <div className="btn btn-success mb-2 mr-2" onClick={(e) => this.register(e)}>Register And View</div>                    
                         <div className="btn btn-danger mb-2" onClick={(e) => this.clear_form(e)}>Clear Form</div>                                            

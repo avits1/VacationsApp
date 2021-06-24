@@ -12,7 +12,6 @@ import './VacationPopup.css';
   // close the popup: closeOnDocumentClick, closeOnEscape          
 
   const VacationPopup = (props) =>  { 
-  // export default function VacationPopup(props) {
 
     const adjustDates = (vacObj)  => {
         let newVacObj = vacObj;
@@ -212,22 +211,11 @@ import './VacationPopup.css';
         } );            
     }
 
-    // JSX Local CSS:
-    /*
-    const centerStyle = {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center'
-    };
-    */
-
     return (
-
 
         <div>
             <Popup open={opened}  onClose={modalClosing} modal closeOnDocumentClick>
             {close => (
-
                 <div className="row">
                     <div className="col-12">              
                         <div className="form">
@@ -241,55 +229,52 @@ import './VacationPopup.css';
 
                             <div className="content">
 
-                            <div className="form-row">
-                             <div className="form-group col-md-6 col-sm-6">
-                                 <label htmlFor="dest" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Destination</label>
-                                 {/* <label htmlFor="dest" className="col-form-label col-form-label-md" style={centerStyle}>Destination</label> */}
-                                 <input type="text"  id="dest" name="dest"  className="form-control" placeholder="Destination.."
-                                         onChange={(e) => setVacation({...vacationInner, dest: e.target.value})} value={vacationInner.dest} />
-                             </div>
-
-                             <div className="form-group col-md-6 col-sm-6">
-                                 <label htmlFor="vac_desc" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Description</label>
-                                 {/* <label htmlFor="vac_desc" className="col-form-label col-form-label-md" style={centerStyle}>Description</label> */}
-                                 <input type="text" id="vac_desc" name="vac_desc"   className="form-control" placeholder="Description.."
-                                         onChange={(e) => setVacation({...vacationInner, vac_desc: e.target.value})} value={vacationInner.vac_desc} /> 
-                             </div>        
-                            </div> 
-
-                            <div className="form-row">
-                            <div className="form-group col-md-6 col-sm-6">
-                                <label htmlFor="pic" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Picture Link</label>
-                                <input type="file" id="pic" onChange={(e) => picSelect(e)} name="pic" className="form-control" placeholder="Picture Link.."  />                                 
-                            </div>
-
-                            <div className="form-group col-lg-3 col-md-4 col-sm-6">
-                                <label htmlFor="date-start" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Date Start</label>
-                                <DatePicker locale="en-US" name="date_start" dateFormat="dd/MM/yyyy"                                                                                 
-                                    selected={vacationInner.date_start} onChange={date1 => setDateStart(date1)} />
-                            </div>
-
-                            <div className="form-group col-lg-3 col-md-4 col-sm-6">
-                                <label htmlFor="date-end" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Date End</label>
-                                <DatePicker locale="en-US" name="date_end" dateFormat="dd/MM/yyyy"                                                                             
-                                    selected={vacationInner.date_end} onChange={date2 => { setDateEnd(date2)}} /> 
-                            </div> 
-                            </div>
-
-                            <div className="form-row">
+                                <div className="form-row">
                                 <div className="form-group col-md-6 col-sm-6">
-                                    <label htmlFor="price" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Price</label>
-                                    <input type="number" id="price" onChange={(e) => setVacation({...vacationInner, price: e.target.value})} name="price" className="form-control" placeholder="Price .." value={vacationInner.price} />
+                                    <label htmlFor="dest" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Destination</label>
+                                    <input type="text"  id="dest" name="dest"  className="form-control" placeholder="Destination.."
+                                            onChange={(e) => setVacation({...vacationInner, dest: e.target.value})} value={vacationInner.dest} />
                                 </div>
+
                                 <div className="form-group col-md-6 col-sm-6">
-                                    <label htmlFor="follow_num" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Follow Number</label>
-                                    <input type="number" id="follow_num" readOnly name="follow_num" className="form-control"  value={vacationInner.follow_num} />
+                                    <label htmlFor="vac_desc" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Description</label>
+                                    <input type="text" id="vac_desc" name="vac_desc"   className="form-control" placeholder="Description.."
+                                            onChange={(e) => setVacation({...vacationInner, vac_desc: e.target.value})} value={vacationInner.vac_desc} /> 
+                                </div>        
+                                </div> 
+   
+                                <div className="form-row">
+                                    <div className="form-group col-md-6 col-sm-6">
+                                        <label htmlFor="pic" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Picture Link</label>
+                                        <input type="file" id="pic" onChange={(e) => picSelect(e)} name="pic" className="form-control" placeholder="Picture Link.."  />                                 
+                                    </div>
+
+                                    <div className="form-group col-lg-3 col-md-4 col-sm-6">
+                                        <label htmlFor="date-start" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Date Start</label>
+                                        <DatePicker locale="en-US" name="date_start" dateFormat="dd/MM/yyyy"                                                                                 
+                                            selected={vacationInner.date_start} onChange={date1 => setDateStart(date1)} />
+                                    </div>
+
+                                    <div className="form-group col-lg-3 col-md-4 col-sm-6">
+                                        <label htmlFor="date-end" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Date End</label>
+                                        <DatePicker locale="en-US" name="date_end" dateFormat="dd/MM/yyyy"                                                                             
+                                            selected={vacationInner.date_end} onChange={date2 => { setDateEnd(date2)}} /> 
+                                    </div> 
                                 </div>
-                            </div>                        
 
-                            <VacsMsgs success={messageOk} show_msg={showMessage} message={msgText} />                                                                                        
+                                <div className="form-row">
+                                    <div className="form-group col-md-6 col-sm-6">
+                                        <label htmlFor="price" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Price</label>
+                                        <input type="number" id="price" onChange={(e) => setVacation({...vacationInner, price: e.target.value})} name="price" className="form-control" placeholder="Price .." value={vacationInner.price} />
+                                    </div>
+                                    <div className="form-group col-md-6 col-sm-6">
+                                        <label htmlFor="follow_num" className="labelStyle col-form-label col-form-label-md col-form-label-sm">Follow Number</label>
+                                        <input type="number" id="follow_num" readOnly name="follow_num" className="form-control"  value={vacationInner.follow_num} />
+                                    </div>
+                                </div>                        
 
-                            </div> {/* End Content */}
+                                <VacsMsgs success={messageOk} show_msg={showMessage} message={msgText} />                                                                                        
+                            </div>
 
                             <div className="form-row">
                                 <div className="form-group col-md-4"></div>
@@ -303,14 +288,11 @@ import './VacationPopup.css';
                                     <div className="btn btn-danger mb-2" onClick={ (e) => clearForm(e)}>Clear Form</div>
                                 </div>
                             </div> 
-                       
-                        </div>                  
+                        </div> 
                     </div>                  
                 </div>      
             )}
-
             </Popup>
-
         </div>   
     );
 };

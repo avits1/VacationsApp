@@ -1,10 +1,6 @@
 import React from 'react';
-
-// TODO1: import Moment from 'react-moment';
-
-// TODO2: implement Moment by packages: moment, react moment with WORKING dependencies  (!!)
-// including: react-scripts, react-dev-utils, ..
-// WorkAround: show date by text cut using .. 
+import Moment from 'react-moment';
+import  'moment-timezone';
 
 const IMG = (imageName) => {
     return require(`../../upload/${imageName}`);
@@ -32,36 +28,13 @@ class VacationCube extends React.Component {
     
     render() {               
         
-        let DateStart = new Date(this.props.vcube.date_start);       
-        let MonStart = DateStart.getMonth();
-        MonStart = parseInt(MonStart) + 1;        
-        let DateStartStr = DateStart.getDate() + "/" + MonStart + "/" + DateStart.getFullYear();
-
-        let DateEnd = new Date(this.props.vcube.date_end);               
-        let MonEnd = DateEnd.getMonth();
-        MonEnd = parseInt(MonEnd) + 1;        
-        let DateEndStr = DateEnd.getDate() + "/" + MonEnd + "/" + DateEnd.getFullYear();
-        
+        let DateStart = new Date(this.props.vcube.date_start);
+        let DateEnd = new Date(this.props.vcube.date_end);
         var follow_num = (!this.props.vcube.follow_num) ? 0 : this.props.vcube.follow_num;
-
-        //// For future use : ..
-        // var src_path = picSource + this.props.vcube.pic;
-        // console.log(src_path);
-        // var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        // var options = { weekday: 'long', year: 'numeric', month: 'numeric', day: 'numeric'};
-    
-        // const date_orig = props.vcube.date_start.toNumber();
-        // const date_formatted = Intl.DateTimeFormat('en-US',{
-        //     year: 'numeric',
-        //     month: 'short',
-        //     day: '2-digit' }).format(date_orig);
-    
-        // &nbsp; = non-breaking space     
 
         return (
         <div className="vacation_div">            
 
-            {/* fa- fas- fab- facebook-f tag bookmark star thumb-up  fa-xs fa-sm fa-lg fa-7x */}                        
             <div className={(this.props.is_admin) ? "d-none text-right" : "text-right"}>
                 <div className=""><i onClick={(e) => this.followVacation(this.props.vcube.vac_id, this.props.is_followed)} className={(this.props.is_followed) ? "fas fa-star" : "far fa-star"}></i></div> 
             </div>
@@ -71,7 +44,6 @@ class VacationCube extends React.Component {
                 <div className=""><i onClick={(e) => this.editVacation(this.props.vcube.vac_id)} className="fas fa-pen"></i></div> 
             </div>
 
-            {/* badge badge-light */}
             <div className="text-left text-success">To: <span className="text-dark">{this.props.vcube.dest}</span></div>
             <div className="text-left text-success">Description: <span className="text-dark">{this.props.vcube.vac_desc}</span></div>
             <div className="text-left text-success">Price: <span className="text-dark">{this.props.vcube.price} &#8362;</span></div>
@@ -82,33 +54,27 @@ class VacationCube extends React.Component {
                 </div>
             </div>
                         
-            {/* TODO1: use Moment Here */}
-            {/* <div className="text-center">{new Intl.DateTimeFormat('en-US',options).format(props.vcube.date_start)}   */}
-            {/* <div className="text-center"> <Moment parse="YYYY-MM-DD HH:mm">{props.vcube.date_start}</Moment>   */}
-
-            {/* WorkAround: show date by text cut using indexOf & slice  */}
-            {/* <div className="text-left">{props.vcube.date_start } - {props.vcube.date_end}</div> */}
-
-            {/* {props.vcube.date_start.toString() } */}
-            {/* {props.vcube.date_start.toUTCString() } */}
-            {/* {props.vcube.date_start.parse("01 Jan 1970") } */} 
-
-            <div className="row">               
+            <div className="row">                           
                 <div className="col-10">                        
                     <div className="text-left  text-success">Vacation Dates:</div>
-                    <div  className="text-left text-info">{DateStartStr} - {DateEndStr}</div>            
+                    <div  className="text-left text-info">
+                        <Moment date={DateStart} format="DD/MM/YYYY" /> - <Moment date={DateEnd} format="DD/MM/YYYY" />
+                    </div>
                 </div>
 
-                {/* badge badge-pill badge-dark badge-info badge-primary badge-secondary  */}
                 <div className="col-2">
                     <div className={(this.props.is_admin) ? "d-none text-right" : "text-right badge badge-dark"}>{follow_num}</div>
                 </div>
             </div>
-                                                
+            <div className="row">  
+            <div className="col-10">                        
+                    <div  className="text-left text-info">
+                    </div>            
+                </div>
+            </div>
         </div>
         );
     }
-
 }
 
 export default VacationCube;

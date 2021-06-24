@@ -89,7 +89,6 @@ class VacsAdmin extends React.Component {
         this.handleModalOpen();            
     }
           
-    // addVacation()  {  //  Will Not Work .. !!
     addVacation = () => {  // use JS Arrow Function for *this* in the right context (!!) 
         this.clearVacation();
         this.handleModalOpen();       
@@ -130,14 +129,15 @@ class VacsAdmin extends React.Component {
                 <VacationPopup modalOpen={this.state.modalOpen} vacation_obj={this.vacation_edit} handleModalOpen={this.handleModalOpen} />
                 <div className="row">
 
-                    <div className="col-3">
-                        <div className="btn btn-primary mb-2" onClick={this.addVacation}>Add Vacation</div>
+                    <div className="col-4">
+                        <div className="btn btn-primary mb-2 mr-2" onClick={this.addVacation}>Add Vacation</div>
+                        <Link to="/vacations_user" className="btn btn-success mb-2 mr-2" >Tag Vacation</Link>
                     </div>
-                    <div className="col-5">                            
+                    <div className="col-4">                            
                         <h3>Manage Vacations</h3>                        
                     </div>
                     <div className="col-4">
-                        <Link to="/vacations_user" className="btn btn-success mb-2 mr-2" >Tag Vacation</Link>                        
+                        <Link to="/vacations_report" className="btn btn-info mb-2 mr-2" >Report</Link>
                         <Link to="/logout" className="btn btn-danger mb-2" >Logout</Link>
                     </div>                    
                 </div>                

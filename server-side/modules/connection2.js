@@ -6,6 +6,7 @@ module.exports = {
     con2_promise_inner: null,
     getConnection: () => {
         this.con2 = mysql2.createConnection({
+            // TODO: change before hosting
             host: "localhost",
             user: "root",
             password: "",
@@ -15,6 +16,7 @@ module.exports = {
     },
     getConnectionPromise: async () => {
         this.con2_promise_inner = await mysql2_promise.createConnection({
+            // TODO: change before hosting
             host: "localhost",
             user: "root",
             password: "",

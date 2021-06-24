@@ -4,43 +4,6 @@ var client_response = require('../modules/client_response');
 var con = require('../modules/connection').getConnection();
 var authen = require('../modules/authen'); /// authenticate modul - check login & admin
 
-// TODO2: Check (Async/Await) if username can be Added ??
-/*
-router.post('/userUnique', (req, res, next) => {
-  var username = (req.body.username) ? req.body.username : "";  
-
-  var err_fields = [];  
-  if (username == "") {
-    err_fields.push("Username is Empty");
-  }  
-  if (err_fields.length > 0) {
-      // something is missing...
-      client_response.setResponse(false, false, " something is missing...", err_fields);
-      res.status(400).json(client_response.getData());
-  } else {
-      //  make sure it's a Unique Username !
-      con.query('SELECT * FROM users WHERE username = ?', [username], function (err, result, fields) {
-      if (err) {            
-          console.log(err);
-          client_response.setResponse(false, true, "There Was an Error Checking Existing Username In The DB...", err);
-          res.status(500).json(client_response.getData());
-          return;
-      }
-
-      if (result.length > 0) {
-          // username already Exist     
-          client_response.setResponse(false, false, "username " + username + " already EXIST!", []);
-          res.status(409).json(client_response.getData()); // status code 409 = Conflict
-          return;
-      }
-
-      client_response.setResponse(true, false, "username " + username + " is unique and can be added !", []);
-      res.status(200).json(client_response.getData());
-    });
-  }
-});
-*/
-  
 // Register User
 router.post('/register', (req, res, next) => {
   var first_name = (req.body.first_name) ? req.body.first_name : "";
@@ -113,7 +76,6 @@ router.post('/register', (req, res, next) => {
 
 
 // Simple login User - Session
-// router.post('/login', guest, (req, res, next) => {
 router.post('/login', (req, res, next) => {      
   var username = (req.body.username) ? req.body.username.trim() : "";
   var password = (req.body.password) ? req.body.password.trim() : "";     
@@ -194,33 +156,6 @@ router.get('/admin_logined', function (req, res, next) {
   }
   client_response.setResponse(true, false, "Admin Is Logined Now", []);
   res.status(200).json(client_response.getData()); 
-  });
-
-
-/*
-router.get('/is_admin', function (req, res, next) {      
-      
-  var username = (req.query.username) ? req.query.username : "";  
-  con.query('SELECT * FROM users WHERE username = ?', [username], function (err, user1, fields) {
-    if (err) {            
-        console.log(err);
-        client_response.setResponse(false, true, "There Was an Error Checking Admin User In The DB...", err);
-        res.status(500).json(client_response.getData());
-        return;
-    }    
-    if (user1.length > 0 && user1[0].role < 3) {       
-      client_response.setResponse(true, false, "username " + username + " is Admin !", []);
-      res.status(200).json(client_response.getData());            
-      return;
-    } else {
-      client_response.setResponse(false, false, "username " + username + " NOT Found OR NOT Admin !!", []);
-      res.status(401).json(client_response.getData()); /// code 401 - Unauthorized // 403 - Forbidden           
-      return;
-    }
-  });
-
-  
-*/
-
+});
 
 module.exports = router;
